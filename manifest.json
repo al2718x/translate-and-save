@@ -1,0 +1,32 @@
+{
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "translate-and-save@al2718x",
+      "strict_min_version": "128.0"
+    }
+  },
+  "manifest_version": 2,
+  "name": "Translate and Save",
+  "version": "0.0.1",
+  "description": "Translate and Save",
+  "icons": {
+    "96": "icons/translate-and-save.png"
+  },
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "webRequest",
+    "<all_urls>"
+  ],
+  "browser_action": {
+    "default_icon": "icons/translate-and-save.png",
+    "default_title": "Translate and Save",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
+}
