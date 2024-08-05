@@ -9,12 +9,46 @@
             font-size: 12px;
             line-height: 1.25rem;
         }
+
+        #i-setup {
+            margin: 4px 0;
+            max-width: 408px;
+        }
+
+        #i-pairs {
+            margin: 4px 0;
+            max-width: 408px;
+            max-height: 400px;
+            overflow-y: scroll;
+        }
+
+        #i-translate-from,
+        #i-translate-to {
+            width: 50px;
+        }
+
+        #i-setup-save {
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        #i-export {
+            width: 400px;
+            height: 100px;
+        }
     </style>
 </head>
 
 <body>
-    <div id="i-pairs" style="margin:5px 0;max-width:408px;max-height:400px;overflow-y:scroll;"></div>
-    <textarea id="i-export" style="width:400px;height:100px;"></textarea>
+    <div id="i-setup">
+        <input type="text" id="i-translate-from">
+        &rarr;
+        <input type="text" id="i-translate-to">
+        &nbsp;
+        <span id="i-setup-save" title="Save">💾</span>
+    </div>
+    <div id="i-pairs"></div>
+    <textarea id="i-export"></textarea>
     <script src="popup.js"></script>
 </body>
 
