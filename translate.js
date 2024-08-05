@@ -5,10 +5,10 @@ function hashCode(s) {
     );
 }
 
-function saveTrans(trans_from, trans_to) {
-    let storingNote = browser.storage.local.set({ [trans_from]: trans_to });
+function saveTrans(trans_src, trans_res) {
+    let storingNote = browser.storage.local.set({ [trans_src]: trans_res });
     storingNote.then(() => {
-        console.log('SAVED: ' + trans_from + ' | ' + trans_to);
+        console.log('SAVED: ' + trans_src + ' | ' + trans_res);
         console.log('STORAGE:');
         let gettingAllStorageItems = browser.storage.local.get(null);
         gettingAllStorageItems.then((data) => {
@@ -91,27 +91,30 @@ function drawPopup(header, content) {
     });
 }
 
-function translate() {
-    let trans_from = document.getSelection().toString().toLowerCase();
-    if ('' === trans_from) {
-        trans_from = 'select text to translate!';
+async function translate() {
+    let trans_src = document.getSelection().toString().toLowerCase();
+    if ('' === trans_src) {
+        trans_src = 'select text to translate!';
     }
-    console.log('TRANSLATE FROM: ' + trans_from);
-    let request = 'https://api.mymemory.translated.net/get?langpair=en|it&q=' + trans_from;
+    console.log('TRANSLATE FROM: ' + trans_src);
+    let data = await browser.storage.local.get('config');
+    let trans_from = data['config']['translate-from'] ?? 'en';
+    let trans_to = data['config']['translate-to'] ?? 'it';
+    let request = `https://api.mymemory.translated.net/get?langpair=${trans_from}|${trans_to}&q=${trans_src}`;
     console.log(request);
     fetch(request).then(function (response) {
         return response.json();
     }).then(function (data) {
-        let trans_to = data.responseData.translatedText.toLowerCase();
-        let trans_all = [trans_to];
+        let trans_res = data.responseData.translatedText.toLowerCase();
+        let trans_res_all = [trans_res];
         for (m of data.matches) {
             let tmp = m.translation.trim().toLowerCase();
             if ('' == tmp) continue;
-            if (trans_all.includes(tmp)) continue;
-            trans_all.push(tmp);
+            if (trans_res_all.includes(tmp)) continue;
+            trans_res_all.push(tmp);
         }
-        console.log('TRANSLATE RESULT: ' + trans_all);
-        drawPopup(trans_from, trans_all);
+        console.log('TRANSLATE RESULT: ' + trans_res_all);
+        drawPopup(trans_src, trans_res_all);
     }).catch(function (err) {
         console.log('TRANSLATE FETCH ERROR: ', err);
     });
