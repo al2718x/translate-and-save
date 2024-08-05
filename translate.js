@@ -29,6 +29,7 @@ function drawPopup(header, content) {
 
     i_popup.style.position = 'fixed';
     i_popup.style.zIndex = 10000;
+    i_popup.style.minWidth = '100px';
     i_popup.style.maxWidth = '300px';
     i_popup.style.left = '50%';
     i_popup.style.top = '50%';
@@ -47,9 +48,9 @@ function drawPopup(header, content) {
     i_close.style.float = 'right';
     i_close.style.border = 'none';
     i_close.style.backgroundColor = '#fff';
-    i_close.style.fontSize = '12px';
+    i_close.style.fontSize = '10px';
     i_close.style.margin = '-2px -4px 0 0';
-    i_close.innerHTML = '🗙';
+    i_close.innerHTML = '❌';
     i_close.addEventListener('click', () => document.body.removeChild(i_popup));
 
     i_header.style.marginBottom = '10px';
