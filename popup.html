@@ -10,16 +10,21 @@
             line-height: 1.25rem;
         }
 
+        #i-translate-src {
+            width: 380px;
+            height: 15px;
+        }
+
+        #i-translate {
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 2px;
+            float: right;
+        }
+
         #i-setup {
             margin: 4px 0;
             max-width: 408px;
-        }
-
-        #i-pairs {
-            margin: 4px 0;
-            max-width: 408px;
-            max-height: 400px;
-            overflow-y: scroll;
         }
 
         #i-translate-from,
@@ -32,6 +37,13 @@
             cursor: pointer;
         }
 
+        #i-pairs {
+            margin: 4px 0;
+            max-width: 408px;
+            max-height: 400px;
+            overflow-y: scroll;
+        }
+
         #i-export {
             width: 400px;
             height: 100px;
@@ -40,6 +52,8 @@
 </head>
 
 <body>
+    <span id="i-translate" title="Translate">▷</span>
+    <textarea id="i-translate-src"></textarea>
     <div id="i-setup">
         <input type="text" id="i-translate-from">
         &rarr;
@@ -49,6 +63,7 @@
     </div>
     <div id="i-pairs"></div>
     <textarea id="i-export"></textarea>
+    <script src="browser-polyfill.js"></script>
     <script src="popup.js"></script>
 </body>
 

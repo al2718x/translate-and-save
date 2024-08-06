@@ -6,11 +6,31 @@ function hashCode(s) {
 }
 
 async function refresh() {
+    let iTranslate = document.getElementById('i-translate');
+    let iTranslateSrc = document.getElementById('i-translate-src');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
     let iSetupSave = document.getElementById('i-setup-save');
     let iPairs = document.getElementById('i-pairs');
     let iExport = document.getElementById('i-export');
+
+    iTranslate.addEventListener('click', async function () {
+        try {
+            let tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+            console.log(iTranslateSrc.value);
+            await browser.tabs.sendMessage(tab.id, { message: 'translateText', text: iTranslateSrc.value });
+        } catch (e) {
+            console.log('err= ' + e);
+        }
+    });
+
+    try {
+        let tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+        let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
+        iTranslateSrc.value = selectedText;
+    } catch (e) {
+        console.log('err= ' + e);
+    }
 
     let data = await browser.storage.local.get(null);
     let config = data['config'] ?? {};
