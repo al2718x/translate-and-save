@@ -75,10 +75,12 @@ function drawPopup(header, content) {
         item.style.cursor = 'pointer';
         item.style.marginRight = '2px';
         item.title = 'Save';
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async function () {
             let trans = document.getElementById(item.dataset.trans_id).innerText;
-            saveTrans(header, trans);
-            document.body.removeChild(i_popup);
+            await saveTrans(header, trans);
+            if (document.body.contains(i_popup)) {
+                document.body.removeChild(i_popup);
+            }
         });
     });
 
