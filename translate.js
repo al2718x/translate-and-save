@@ -5,20 +5,16 @@ function hashCode(s) {
     );
 }
 
-function saveTrans(trans_src, trans_res) {
-    let storingNote = browser.storage.local.set({ [trans_src]: trans_res });
-    storingNote.then(() => {
-        console.log('SAVED: ' + trans_src + ' | ' + trans_res);
-        console.log('STORAGE:');
-        let gettingAllStorageItems = browser.storage.local.get(null);
-        gettingAllStorageItems.then((data) => {
-            let keys = Object.keys(data);
-            for (let key of keys) {
-                let value = data[key];
-                console.log(key + ' ' + value);
-            }
-        }, (error) => console.log(error));
-    }, (error) => console.log(error));
+async function saveTrans(trans_src, trans_res) {
+    let data = await browser.storage.local.get(null);
+    let translation = data['translation'] ?? {};
+    translation[trans_src] = trans_res;
+    await browser.storage.local.set({ 'translation': translation });
+    let keys = Object.keys(translation);
+    for (let key of keys) {
+        let value = translation[key];
+        console.log(key + ' ' + value);
+    }
 }
 
 function drawPopup(header, content) {
@@ -96,8 +92,8 @@ async function translate() {
     if ('' === trans_src) {
         trans_src = 'select text to translate!';
     }
-    console.log('TRANSLATE FROM: ' + trans_src);
-    let data = await browser.storage.local.get('config');
+    console.log('TRANSLATE SOURCE: ' + trans_src);
+    let data = await browser.storage.local.get(null);
     let trans_from = data['config']['translate-from'] ?? 'en';
     let trans_to = data['config']['translate-to'] ?? 'it';
     let request = `https://api.mymemory.translated.net/get?langpair=${trans_from}|${trans_to}&q=${trans_src}`;
