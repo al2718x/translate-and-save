@@ -5,7 +5,7 @@ browser.runtime.onMessage.addListener((request) => {
         });
     }
     if ('translateText' == request.message) {
-        translate(request.text);
+        translateText(request.text);
     }
     return new Promise(resolve => {
         setTimeout(() => resolve(''), 100);
@@ -110,7 +110,7 @@ function drawForm(header, content) {
     });
 }
 
-async function translate(trans_src) {
+async function translateText(trans_src) {
     // let trans_src = document.getSelection().toString().toLowerCase();
     if ('' === trans_src) {
         trans_src = 'select text to translate!';

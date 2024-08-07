@@ -96,7 +96,7 @@ function drawForm(header, content) {
     });
 }
 
-async function translate() {
+async function translateSelection() {
     let trans_src = document.getSelection().toString().toLowerCase();
     if ('' === trans_src) {
         trans_src = 'select text to translate!';
@@ -124,4 +124,4 @@ async function translate() {
     });
 }
 
-translate();
+translateSelection();
