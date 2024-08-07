@@ -24,35 +24,30 @@ async function saveTrans(trans_src, trans_res) {
     let translation = data['translation'] ?? {};
     translation[trans_src] = trans_res;
     await browser.storage.local.set({ 'translation': translation });
-    let keys = Object.keys(translation);
-    for (let key of keys) {
-        let value = translation[key];
-        console.log(key + ' ' + value);
-    }
 }
 
-function drawPopup(header, content) {
-    let i_popup = document.createElement('div');
+function drawForm(header, content) {
+    let i_form = document.createElement('div');
     let i_close = document.createElement('button');
     let i_header = document.createElement('div');
     let i_content = document.createElement('div');
 
-    i_popup.style.position = 'fixed';
-    i_popup.style.zIndex = 10000;
-    i_popup.style.minWidth = '100px';
-    i_popup.style.maxWidth = '300px';
-    i_popup.style.left = '50%';
-    i_popup.style.top = '50%';
-    i_popup.style.transform = 'translate(-50%, -50%)';
-    i_popup.style.padding = '15px';
-    i_popup.style.border = 'border:1px solid #777';
-    i_popup.style.borderRadius = '5px';
-    i_popup.style.color = '#000';
-    i_popup.style.backgroundColor = '#fff';
-    i_popup.style.boxShadow = '0 1px 5px #777';
-    i_popup.style.fontFamily = 'sans-serif';
-    i_popup.style.fontSize = '12px';
-    i_popup.style.lineHeight = '1rem';
+    i_form.style.position = 'fixed';
+    i_form.style.zIndex = 10000;
+    i_form.style.minWidth = '100px';
+    i_form.style.maxWidth = '300px';
+    i_form.style.left = '50%';
+    i_form.style.top = '50%';
+    i_form.style.transform = 'translate(-50%, -50%)';
+    i_form.style.padding = '15px';
+    i_form.style.border = 'border:1px solid #777';
+    i_form.style.borderRadius = '5px';
+    i_form.style.color = '#000';
+    i_form.style.backgroundColor = '#fff';
+    i_form.style.boxShadow = '0 1px 5px #777';
+    i_form.style.fontFamily = 'sans-serif';
+    i_form.style.fontSize = '12px';
+    i_form.style.lineHeight = '1rem';
 
     i_close.style.cursor = 'pointer';
     i_close.style.float = 'right';
@@ -61,7 +56,7 @@ function drawPopup(header, content) {
     i_close.style.fontSize = '10px';
     i_close.style.margin = '-2px -4px 0 0';
     i_close.innerHTML = '❌';
-    i_close.addEventListener('click', () => document.body.removeChild(i_popup));
+    i_close.addEventListener('click', () => document.body.removeChild(i_form));
 
     i_header.style.marginBottom = '10px';
     i_header.style.padding = '0 30px 10px 0';
@@ -79,11 +74,11 @@ function drawPopup(header, content) {
         })
         .join('<span style="display:block;height:5px;"></span>');
 
-    i_popup.appendChild(i_close);
-    i_popup.appendChild(i_header);
-    i_popup.appendChild(i_content);
+    i_form.appendChild(i_close);
+    i_form.appendChild(i_header);
+    i_form.appendChild(i_content);
 
-    document.body.appendChild(i_popup);
+    document.body.appendChild(i_form);
     document.querySelectorAll('.trans-save').forEach(function (item) {
         item.style.color = '#070';
         item.style.cursor = 'pointer';
@@ -92,14 +87,14 @@ function drawPopup(header, content) {
         item.addEventListener('click', async function () {
             let trans = document.getElementById(item.dataset.trans_id).innerText;
             await saveTrans(header, trans);
-            if (document.body.contains(i_popup)) {
-                document.body.removeChild(i_popup);
+            if (document.body.contains(i_form)) {
+                document.body.removeChild(i_form);
             }
         });
     });
 
     addEventListener('keydown', (event) => {
-        if ('Escape' == event.code) document.body.removeChild(i_popup);
+        if ('Escape' == event.code) document.body.removeChild(i_form);
     });
 }
 
@@ -113,7 +108,6 @@ async function translate(trans_src) {
     let trans_from = data['config']['translate-from'] ?? 'en';
     let trans_to = data['config']['translate-to'] ?? 'it';
     let request = `https://api.mymemory.translated.net/get?langpair=${trans_from}|${trans_to}&q=${trans_src}`;
-    console.log(request);
     fetch(request).then(function (response) {
         return response.json();
     }).then(function (data) {
@@ -126,7 +120,7 @@ async function translate(trans_src) {
             trans_res_all.push(tmp);
         }
         console.log('TRANSLATE RESULT: ' + trans_res_all);
-        drawPopup(trans_src, trans_res_all);
+        drawForm(trans_src, trans_res_all);
     }).catch(function (err) {
         console.log('TRANSLATE FETCH ERROR: ', err);
     });

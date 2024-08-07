@@ -17,10 +17,9 @@ async function refresh() {
     iTranslate.addEventListener('click', async function () {
         try {
             let tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
-            console.log(iTranslateSrc.value);
             await browser.tabs.sendMessage(tab.id, { message: 'translateText', text: iTranslateSrc.value });
         } catch (e) {
-            console.log('err= ' + e);
+            console.log('POPUP ERROR: ', e);
         }
     });
 
@@ -29,7 +28,7 @@ async function refresh() {
         let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
         iTranslateSrc.value = selectedText;
     } catch (e) {
-        console.log('err= ' + e);
+        console.log('POPUP ERROR: ', e);
     }
 
     let data = await browser.storage.local.get(null);
