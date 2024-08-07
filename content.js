@@ -26,12 +26,24 @@ async function saveTrans(trans_src, trans_res) {
     await browser.storage.local.set({ 'translation': translation });
 }
 
+function removeForm(i_form) {
+    if (document.body.contains(i_form)) {
+        document.body.removeChild(i_form);
+    }
+}
+
 function drawForm(header, content) {
+    let i_form_old = document.getElementById('i-translate-and-save-form');
+    if (i_form_old && document.body.contains(i_form_old)) {
+        document.body.removeChild(i_form_old);
+    }
+
     let i_form = document.createElement('div');
     let i_close = document.createElement('button');
     let i_header = document.createElement('div');
     let i_content = document.createElement('div');
 
+    i_form.id = 'i-translate-and-save-form';
     i_form.style.position = 'fixed';
     i_form.style.zIndex = 10000;
     i_form.style.minWidth = '100px';
@@ -56,7 +68,7 @@ function drawForm(header, content) {
     i_close.style.fontSize = '10px';
     i_close.style.margin = '-2px -4px 0 0';
     i_close.innerHTML = '❌';
-    i_close.addEventListener('click', () => document.body.removeChild(i_form));
+    i_close.addEventListener('click', () => removeForm(i_form));
 
     i_header.style.marginBottom = '10px';
     i_header.style.padding = '0 30px 10px 0';
@@ -87,14 +99,14 @@ function drawForm(header, content) {
         item.addEventListener('click', async function () {
             let trans = document.getElementById(item.dataset.trans_id).innerText;
             await saveTrans(header, trans);
-            if (document.body.contains(i_form)) {
-                document.body.removeChild(i_form);
-            }
+            removeForm(i_form);
         });
     });
 
     addEventListener('keydown', (event) => {
-        if ('Escape' == event.code) document.body.removeChild(i_form);
+        if ('Escape' == event.code) {
+            removeForm(i_form);
+        }
     });
 }
 
