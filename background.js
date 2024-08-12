@@ -5,8 +5,9 @@ browser.contextMenus.create({
 
 browser.contextMenus.onClicked.addListener((info, tab) => {
     if ('translate-and-save' === info.menuItemId) {
-        browser.tabs.executeScript({
-            file: "translate.js",
-        });
+        browser.browserAction.openPopup();
+        // browser.tabs.executeScript({
+        //     file: "translate.js"
+        // });
     }
 });
