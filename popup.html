@@ -10,16 +10,30 @@
             line-height: 1.25rem;
         }
 
-        #i-translate-src {
-            width: 380px;
-            height: 15px;
+        body {
+            background-color: #fff;
         }
 
-        #i-translate {
-            font-size: 16px;
+        #i-translate-form {
+            width: 408px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        #i-translate-src {
+            width: 370px;
+            max-width: 370px;
+            height: 30px;
+        }
+
+        #btn-translate {
+            width: 24px;
+            padding: 4px;
+            border: 1px solid #777;
+            border-radius: 3px;
+            background-color: #fff;
             cursor: pointer;
-            margin-top: 3px;
-            float: right;
         }
 
         #i-translate-res {
@@ -34,11 +48,12 @@
 
         #i-translate-from,
         #i-translate-to {
-            width: 50px;
+            width: 40px;
         }
 
-        #i-setup-save {
-            font-size: 12px;
+        #btn-setup-save {
+            border: none;
+            background-color: #fff;
             cursor: pointer;
         }
 
@@ -57,15 +72,16 @@
 </head>
 
 <body>
-    <span id="i-translate" title="Translate">▷</span>
-    <textarea id="i-translate-src"></textarea>
+    <div id="i-translate-form">
+        <textarea id="i-translate-src"></textarea>
+        <input type="button" id="btn-translate" value="▷" title="Translate">
+    </div>
     <div id="i-translate-res"></div>
     <div id="i-setup">
         <input type="text" id="i-translate-from">
         &rarr;
         <input type="text" id="i-translate-to">
-        &nbsp;
-        <span id="i-setup-save" title="Save">💾</span>
+        <input type="button" id="btn-setup-save" value="💾" title="Save">
     </div>
     <div id="i-pairs"></div>
     <textarea id="i-export"></textarea>
