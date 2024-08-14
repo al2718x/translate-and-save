@@ -5,6 +5,14 @@ function hashCode(s) {
     );
 }
 
+async function setupSave() {
+    let storage_data = await browser.storage.local.get(null);
+    let config = storage_data['config'] ?? {};
+    config['translate-from'] = document.getElementById('i-translate-from').value;
+    config['translate-to'] = document.getElementById('i-translate-to').value;
+    await browser.storage.local.set({ 'config': config });
+}
+
 function transSave(item) {
     item.style.cursor = 'pointer';
     item.title = 'Save';
@@ -94,8 +102,8 @@ async function refresh() {
 
     btnTranslate.addEventListener('click', () => translate());
 
-    let data = await browser.storage.local.get(null);
-    let config = data['config'] ?? {};
+    let storage_data = await browser.storage.local.get(null);
+    let config = storage_data['config'] ?? {};
     if (!config['translate-from'] || !config['translate-to']) {
         config['translate-from'] = 'en';
         config['translate-to'] = 'it';
@@ -103,15 +111,9 @@ async function refresh() {
     }
     iTranslateFrom.value = config['translate-from'] ?? 'en';
     iTranslateTo.value = config['translate-to'] ?? 'it';
-    btnSetupSave.addEventListener('click', async function () {
-        let data = await browser.storage.local.get(null);
-        let config = data['config'] ?? {};
-        config['translate-from'] = iTranslateFrom.value;
-        config['translate-to'] = iTranslateTo.value;
-        await browser.storage.local.set({ 'config': config });
-    });
+    btnSetupSave.addEventListener('click', () => setupSave());
 
-    let translation = data['translation'] ?? {};
+    let translation = storage_data['translation'] ?? {};
     let keys = Object.keys(translation);
     let pairs = new Map();
     for (let key of keys) {
