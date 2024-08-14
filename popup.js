@@ -41,18 +41,21 @@ function transDelete(item) {
     });
 }
 
-async function translate() {
-    let iTranslateSrc = document.getElementById('i-translate-src');
-    let iTranslateRes = document.getElementById('i-translate-res');
-    let trans_src = iTranslateSrc.value.trim().toLowerCase();
-    console.log('TRANSLATE SOURCE: ' + trans_src);
-    if ('' === trans_src) return;
+function drawTranslateResult(result) {
+    document.getElementById('i-translate-res').innerHTML = result
+        .map((item) => {
+            let id = 'trans-save' + hashCode(item);
+            return `
+            <span class="trans-save" data-trans_id="${id}">💾</span>
+            <span id="${id}">${item}</span>
+            `;
+        })
+        .join('<span style="display:block;height:5px;"></span>');
+    document.querySelectorAll('.trans-save').forEach((item) => transSave(item));
+}
 
-    let storage_data = await browser.storage.local.get(null);
-    let trans_from = storage_data['config']['translate-from'] ?? 'en';
-    let trans_to = storage_data['config']['translate-to'] ?? 'it';
-    let request = `https://api.mymemory.translated.net/get?langpair=${trans_from}|${trans_to}&q=${trans_src}`;
-
+function runApiTranslated(lanf_from, lang_to, query) {
+    let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${query}`;
     fetch(request).then(function (response) {
         return response.json();
     }).then(function (data) {
@@ -65,20 +68,20 @@ async function translate() {
             trans_res_all.push(tmp);
         }
         console.log('TRANSLATE RESULT: ' + trans_res_all);
-        iTranslateRes.innerHTML = trans_res_all
-            .map((item) => {
-                let id = 'trans-save' + hashCode(item);
-                return `
-                <span class="trans-save" data-trans_id="${id}">💾</span>
-                <span id="${id}">${item}</span>
-                `;
-            })
-            .join('<span style="display:block;height:5px;"></span>');
-
-        document.querySelectorAll('.trans-save').forEach((item) => transSave(item));
+        drawTranslateResult(trans_res_all);
     }).catch(function (err) {
-        console.log('TRANSLATE FETCH ERROR: ', err);
+        console.log('TRANSLATE ERROR: ', err);
     });
+}
+
+async function translate() {
+    let query = document.getElementById('i-translate-src').value.trim().toLowerCase();
+    console.log('TRANSLATE TEXT: ' + query);
+    if ('' === query) return;
+    let storage_data = await browser.storage.local.get(null);
+    let lang_from = storage_data['config']['translate-from'] ?? 'en';
+    let lang_to = storage_data['config']['translate-to'] ?? 'it';
+    runApiTranslated(lang_from, lang_to, query);
 }
 
 function exportShow() {
