@@ -24,7 +24,7 @@
         #i-translate-src {
             width: 370px;
             max-width: 370px;
-            height: 30px;
+            height: 17px;
         }
 
         #btn-translate {
@@ -46,6 +46,13 @@
             max-width: 408px;
         }
 
+        #sel-api {
+            border: 1px solid #777;
+            border-radius: 3px;
+            background-color: #fff;
+            height: 20px;
+        }
+
         #i-translate-from,
         #i-translate-to {
             width: 40px;
@@ -54,7 +61,7 @@
         #btn-setup-save,
         #btn-export-show {
             border: none;
-            padding-right: 0;
+            padding-left: 0;
             background-color: #fff;
             cursor: pointer;
         }
@@ -81,11 +88,15 @@
     <div id="i-translate-res"></div>
     <div id="i-pairs"></div>
     <div id="i-setup">
+        <select id="sel-api">
+            <option value="0">googleapis.com</option>
+            <option value="1">translated.net</option>
+        </select>
         <input type="text" id="i-translate-from">
         &rarr;
         <input type="text" id="i-translate-to">
         <input type="button" id="btn-setup-save" value="💾" title="Save">
-        <input type="button" id="btn-export-show" value="📜" title="Export">
+        <input type="button" id="btn-export-show" value="📥" title="Export">
     </div>
     <textarea id="i-export" style="display:none;"></textarea>
     <script src="browser-polyfill.js"></script>

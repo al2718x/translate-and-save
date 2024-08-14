@@ -8,6 +8,7 @@ function hashCode(s) {
 async function setupSave() {
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
+    config['api'] = document.getElementById('sel-api').value;
     config['translate-from'] = document.getElementById('i-translate-from').value;
     config['translate-to'] = document.getElementById('i-translate-to').value;
     await browser.storage.local.set({ 'config': config });
@@ -55,6 +56,7 @@ function drawTranslateResult(result) {
 }
 
 function runApiTranslated(lanf_from, lang_to, query) {
+    console.log('TRANSLATE BY translated.net');
     let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${query}`;
     fetch(request).then(function (response) {
         return response.json();
@@ -74,14 +76,47 @@ function runApiTranslated(lanf_from, lang_to, query) {
     });
 }
 
+function runApiGoogle(lanf_from, lang_to, query) {
+    console.log('TRANSLATE BY googleapis.com');
+    let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${query}`;
+    fetch(request).then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        let trans_res_all = [];
+        for (m of data.sentences) {
+            let tmp = m.trans.trim().toLowerCase();
+            if ('' === tmp) continue;
+            if (trans_res_all.includes(tmp)) continue;
+            trans_res_all.push(tmp);
+        }
+        for (m of data.dict) {
+            let tmp = m.terms[0].trim().toLowerCase(); //todo - use full list?
+            if ('' === tmp) continue;
+            if (trans_res_all.includes(tmp)) continue;
+            trans_res_all.push(tmp);
+        }
+        console.log('TRANSLATE RESULT: ' + trans_res_all);
+        drawTranslateResult(trans_res_all);
+    }).catch(function (err) {
+        console.log('TRANSLATE ERROR: ', err);
+    });
+}
+
 async function translate() {
     let query = document.getElementById('i-translate-src').value.trim().toLowerCase();
     console.log('TRANSLATE TEXT: ' + query);
     if ('' === query) return;
     let storage_data = await browser.storage.local.get(null);
+    let api = storage_data['config']['api'] ?? '0';
     let lang_from = storage_data['config']['translate-from'] ?? 'en';
     let lang_to = storage_data['config']['translate-to'] ?? 'it';
-    runApiTranslated(lang_from, lang_to, query);
+    switch (api) {
+        case '1':
+            runApiTranslated(lang_from, lang_to, query);
+            break;
+        default:
+            runApiGoogle(lang_from, lang_to, query);
+    }
 }
 
 function exportShow() {
@@ -101,6 +136,7 @@ async function getSelectedText() {
 
 async function refresh() {
     let btnTranslate = document.getElementById('btn-translate');
+    let selApi = document.getElementById('sel-api');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
     let btnSetupSave = document.getElementById('btn-setup-save');
@@ -112,11 +148,13 @@ async function refresh() {
 
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
-    if (!config['translate-from'] || !config['translate-to']) {
+    if (!config['api'] || !config['translate-from'] || !config['translate-to']) {
+        config['api'] = '0';
         config['translate-from'] = 'en';
         config['translate-to'] = 'it';
         await browser.storage.local.set({ 'config': config });
     }
+    selApi.value = config['api'] ?? '0';
     iTranslateFrom.value = config['translate-from'] ?? 'en';
     iTranslateTo.value = config['translate-to'] ?? 'it';
     btnSetupSave.addEventListener('click', () => setupSave());
