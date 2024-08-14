@@ -81,6 +81,10 @@ async function translate() {
     });
 }
 
+function exportShow() {
+    document.getElementById('i-export').style.display = null;
+}
+
 async function getSelectedText() {
     let iTranslateSrc = document.getElementById('i-translate-src');
     try {
@@ -98,6 +102,7 @@ async function refresh() {
     let iTranslateTo = document.getElementById('i-translate-to');
     let btnSetupSave = document.getElementById('btn-setup-save');
     let iPairs = document.getElementById('i-pairs');
+    let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
 
     btnTranslate.addEventListener('click', () => translate());
@@ -134,6 +139,7 @@ async function refresh() {
             `;
         iExport.innerHTML += `${key} = ${value}\r\n`;
     });
+    btnExportShow.addEventListener('click', () => exportShow());
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
 }

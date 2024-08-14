@@ -37,7 +37,7 @@
         }
 
         #i-translate-res {
-            margin: 4px 0 6px 0;
+            margin: 6px 0 0 0;
             max-width: 408px;
         }
 
@@ -51,14 +51,16 @@
             width: 40px;
         }
 
-        #btn-setup-save {
+        #btn-setup-save,
+        #btn-export-show {
             border: none;
+            padding-right: 0;
             background-color: #fff;
             cursor: pointer;
         }
 
         #i-pairs {
-            margin: 4px 0;
+            margin: 4px 0 6px 0;
             max-width: 408px;
             max-height: 400px;
             overflow-y: scroll;
@@ -77,14 +79,15 @@
         <input type="button" id="btn-translate" value="▷" title="Translate">
     </div>
     <div id="i-translate-res"></div>
+    <div id="i-pairs"></div>
     <div id="i-setup">
         <input type="text" id="i-translate-from">
         &rarr;
         <input type="text" id="i-translate-to">
         <input type="button" id="btn-setup-save" value="💾" title="Save">
+        <input type="button" id="btn-export-show" value="📜" title="Export">
     </div>
-    <div id="i-pairs"></div>
-    <textarea id="i-export"></textarea>
+    <textarea id="i-export" style="display:none;"></textarea>
     <script src="browser-polyfill.js"></script>
     <script src="popup.js"></script>
 </body>
