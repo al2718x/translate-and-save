@@ -191,8 +191,19 @@ async function refresh() {
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
 }
 
+function textareaEvents() {
+    let iTranslateSrc = document.getElementById('i-translate-src');
+    setTimeout(() => iTranslateSrc.focus(), 0); 2
+    let t = null;
+    iTranslateSrc.addEventListener('input', () => {
+        if (t) clearTimeout(t);
+        t = setTimeout(() => translate(), 500);
+    });
+}
+
 (async function run() {
     await getSelectedText();
     await translate();
     await refresh();
+    textareaEvents();
 })();
