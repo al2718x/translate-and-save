@@ -57,17 +57,19 @@ function drawTranslateResult(result) {
 
 function runApiTranslated(lanf_from, lang_to, query) {
     console.log('TRANSLATE BY translated.net');
-    let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${query}`;
+    let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${encodeURIComponent(query)}`;
     fetch(request).then(function (response) {
         return response.json();
     }).then(function (data) {
-        let trans_res = data.responseData.translatedText.toLowerCase();
+        let trans_res = data?.responseData?.translatedText?.toLowerCase();
         let trans_res_all = [trans_res];
-        for (m of data.matches) {
-            let tmp = m.translation.trim().toLowerCase();
-            if ('' === tmp) continue;
-            if (trans_res_all.includes(tmp)) continue;
-            trans_res_all.push(tmp);
+        if (data['matches']) {
+            for (m of data['matches']) {
+                let tmp = m.translation.trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
         }
         console.log('TRANSLATE RESULT: ' + trans_res_all);
         drawTranslateResult(trans_res_all);
@@ -78,22 +80,26 @@ function runApiTranslated(lanf_from, lang_to, query) {
 
 function runApiGoogle(lanf_from, lang_to, query) {
     console.log('TRANSLATE BY googleapis.com');
-    let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${query}`;
+    let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(query)}`;
     fetch(request).then(function (response) {
         return response.json();
     }).then(function (data) {
         let trans_res_all = [];
-        for (m of data.sentences) {
-            let tmp = m.trans.trim().toLowerCase();
-            if ('' === tmp) continue;
-            if (trans_res_all.includes(tmp)) continue;
-            trans_res_all.push(tmp);
+        if (data['sentences']) {
+            for (m of data['sentences']) {
+                let tmp = m.trans.trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
         }
-        for (m of data.dict) {
-            let tmp = m.terms[0].trim().toLowerCase(); //todo - use full list?
-            if ('' === tmp) continue;
-            if (trans_res_all.includes(tmp)) continue;
-            trans_res_all.push(tmp);
+        if (data['dict']) {
+            for (m of data['dict']) {
+                let tmp = m.terms[0].trim().toLowerCase(); //todo - use full list?
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
         }
         console.log('TRANSLATE RESULT: ' + trans_res_all);
         drawTranslateResult(trans_res_all);
