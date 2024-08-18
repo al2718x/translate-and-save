@@ -109,6 +109,7 @@ function runApiGoogle(lanf_from, lang_to, query) {
 }
 
 async function translate() {
+    await setupSave();
     let query = document.getElementById('i-translate-src').value.trim().toLowerCase();
     console.log('TRANSLATE TEXT: ' + query);
     if ('' === query) return;
