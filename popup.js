@@ -15,7 +15,6 @@ async function setupSave() {
 }
 
 function transSave(item) {
-    item.style.cursor = 'pointer';
     item.title = 'Save';
     item.addEventListener('click', async function () {
         let storage_data = await browser.storage.local.get(null);
@@ -32,8 +31,6 @@ function transSave(item) {
 }
 
 function transDelete(item) {
-    item.style.fontSize = '10px';
-    item.style.cursor = 'pointer';
     item.title = 'Delete';
     item.addEventListener('click', async function () {
         let storage_data = await browser.storage.local.get(null);
@@ -46,7 +43,7 @@ function transDelete(item) {
 }
 
 function transPick(item) {
-    item.title = 'Pickg';
+    item.title = 'Pick';
     item.addEventListener('click', function () {
         document.getElementById('i-translate-src').value = item.innerText;
         translate();
@@ -112,7 +109,7 @@ function runApiGoogle(lanf_from, lang_to, query) {
                 trans_res_all.push(tmp);
             }
             for (m of data['dict']) {
-                let tmp = m.terms.join(', ');
+                let tmp = m.terms.join('; ');
                 if ('' === tmp) continue;
                 if (trans_res_all.includes(tmp)) continue;
                 trans_res_all.push(tmp);
