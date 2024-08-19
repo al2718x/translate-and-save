@@ -45,6 +45,14 @@ function transDelete(item) {
     });
 }
 
+function transPick(item) {
+    item.title = 'Pickg';
+    item.addEventListener('click', function () {
+        document.getElementById('i-translate-src').value = item.innerText;
+        translate();
+    });
+}
+
 function drawTranslateResult(result) {
     document.getElementById('i-translate-res').innerHTML = result
         .map((item) => {
@@ -192,7 +200,7 @@ async function refresh() {
         iPairs.innerHTML += `
             <div${latest_str}>
             <span class="trans-delete" data-trans_id="${id}">❌</span>
-            <b id="${id}">${key}</b>
+            <b class="trans-pick" id="${id}">${key}</b>
             ${value}
             </div>
             `;
@@ -201,6 +209,7 @@ async function refresh() {
     btnExportShow.addEventListener('click', () => exportShow());
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
+    document.querySelectorAll('.trans-pick').forEach((item) => transPick(item));
 }
 
 function textareaEvents() {
