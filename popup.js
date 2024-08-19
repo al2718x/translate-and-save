@@ -95,7 +95,13 @@ function runApiGoogle(lanf_from, lang_to, query) {
         }
         if (data['dict']) {
             for (m of data['dict']) {
-                let tmp = m.terms[0].trim().toLowerCase(); //todo - use full list?
+                let tmp = m.terms[0].trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
+            for (m of data['dict']) {
+                let tmp = m.terms.join(', ');
                 if ('' === tmp) continue;
                 if (trans_res_all.includes(tmp)) continue;
                 trans_res_all.push(tmp);
