@@ -23,7 +23,10 @@ function transSave(item) {
         let trans_src = document.getElementById('i-translate-src').value.trim().toLowerCase();
         let trans_res = document.getElementById(item.dataset.trans_id).innerText;
         translation[trans_src] = trans_res;
-        await browser.storage.local.set({ 'translation': translation });
+        await browser.storage.local.set({
+            'translation': translation,
+            'latest': trans_src
+        });
         refresh();
     });
 }
@@ -173,6 +176,7 @@ async function refresh() {
     btnSetupSave.addEventListener('click', () => setupSave());
 
     let translation = storage_data['translation'] ?? {};
+    let latest = storage_data['latest'] ?? '';
     let keys = Object.keys(translation);
     let pairs = new Map();
     for (let key of keys) {
@@ -184,8 +188,9 @@ async function refresh() {
     iExport.innerHTML = '';
     pairsSorted.forEach((value, key, map) => {
         let id = 'trans-delete' + hashCode(key);
+        let latest_str = key === latest ? ' class="latest"' : '';
         iPairs.innerHTML += `
-            <div>
+            <div${latest_str}>
             <span class="trans-delete" data-trans_id="${id}">❌</span>
             <b id="${id}">${key}</b>
             ${value}
