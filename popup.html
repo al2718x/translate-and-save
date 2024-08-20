@@ -14,26 +14,10 @@
             background-color: #fff;
         }
 
-        #i-translate-form {
-            width: 408px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
         #i-translate-src {
-            width: 373px;
-            max-width: 373px;
+            width: 400px;
+            max-width: 400px;
             height: 17px;
-        }
-
-        #btn-translate {
-            width: 24px;
-            padding: 4px;
-            border: 1px solid #777;
-            border-radius: 3px;
-            background-color: #fff;
-            cursor: pointer;
         }
 
         #i-translate-res {
@@ -58,12 +42,19 @@
             width: 40px;
         }
 
-        #btn-setup-save,
-        #btn-export-show {
+        #btn-setup-save {
             border: none;
-            padding-left: 0;
+            padding: 0;
             background-color: #fff;
             cursor: pointer;
+        }
+
+        #btn-export-show {
+            border: none;
+            padding: 4px 2px 0 0;
+            background-color: #fff;
+            cursor: pointer;
+            float: right;
         }
 
         #i-pairs {
@@ -95,10 +86,7 @@
 </head>
 
 <body>
-    <div id="i-translate-form">
-        <textarea id="i-translate-src"></textarea>
-        <input type="button" id="btn-translate" value="▷" title="Translate">
-    </div>
+    <textarea id="i-translate-src"></textarea>
     <div id="i-translate-res"></div>
     <div id="i-pairs"></div>
     <div id="i-setup">

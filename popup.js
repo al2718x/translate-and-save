@@ -156,7 +156,6 @@ async function getSelectedText() {
 }
 
 async function refresh() {
-    let btnTranslate = document.getElementById('btn-translate');
     let selApi = document.getElementById('sel-api');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
@@ -164,8 +163,6 @@ async function refresh() {
     let iPairs = document.getElementById('i-pairs');
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
-
-    btnTranslate.addEventListener('click', () => translate());
 
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
