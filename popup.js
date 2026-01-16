@@ -68,7 +68,7 @@ function drawTranslateResult(result) {
             return `
             <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
             <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
-            <span id="${id}">${item}</span>
+            <span id="${id}" contenteditable="true">${item}</span>
             `;
         })
         .join('<span style="display:block;height:5px;"></span>');
@@ -206,7 +206,7 @@ async function refresh() {
         let latest_str = key === latest ? ' class="latest"' : '';
         iPairs.innerHTML += `
             <div${latest_str}>
-            <span class="trans-delete" data-trans_id="${id}">❌</span>
+            <span class="trans-delete" data-trans_id="${id}">☒</span>
             <b class="trans-pick" id="${id}">${key}</b>
             ${value}
             </div>
