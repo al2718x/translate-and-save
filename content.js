@@ -7,7 +7,7 @@
 browser.runtime.onMessage.addListener((request) => {
     if ('getSelectedText' == request.message) {
         return new Promise(resolve => {
-            setTimeout(() => resolve(getSelectedText().toLowerCase()), 10);
+            setTimeout(() => resolve(getSelectedText().toLowerCase()), 200);
         });
     }
 

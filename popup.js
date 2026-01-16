@@ -53,6 +53,21 @@ function transDelete(item) {
     });
 }
 
+function transEdit(item) {
+    item.title = 'Edit';
+    item.addEventListener('blur', async function () {
+        let storage_data = await browser.storage.local.get(null);
+        let translation = storage_data['translation'] ?? {};
+        let trans = document.getElementById(item.dataset.trans_id).innerText;
+        let new_trans = item.innerText.trim();
+        if (new_trans) {
+            translation[trans] = item.innerText;
+        }
+        await browser.storage.local.set({ 'translation': translation });
+        refresh();
+    });
+}
+
 function transPick(item) {
     item.title = 'Pick';
     item.addEventListener('click', function () {
@@ -68,7 +83,7 @@ function drawTranslateResult(result) {
             return `
             <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
             <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
-            <span id="${id}" contenteditable="true">${item}</span>
+            <span id="${id}" contenteditable="true" title="Edit">${item}</span>
             `;
         })
         .join('<span style="display:block;height:5px;"></span>');
@@ -208,7 +223,7 @@ async function refresh() {
             <div${latest_str}>
             <span class="trans-delete" data-trans_id="${id}">☒</span>
             <b class="trans-pick" id="${id}">${key}</b>
-            ${value}
+            <span class="trans-edit" contenteditable="true" data-trans_id="${id}">${value}</span>
             </div>
             `;
         iExport.innerHTML += `${key}|${value}\r\n`;
@@ -217,6 +232,7 @@ async function refresh() {
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
     document.querySelectorAll('.trans-pick').forEach((item) => transPick(item));
+    document.querySelectorAll('.trans-edit').forEach((item) => transEdit(item));
 }
 
 function textareaEvents() {
