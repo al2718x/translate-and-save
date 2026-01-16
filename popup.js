@@ -14,14 +14,25 @@ async function setupSave() {
     await browser.storage.local.set({ 'config': config });
 }
 
-function transSave(item) {
-    item.title = 'Save';
+function transSave(item, append = false) {
+    item.title = (append) ? 'Save append' : 'Save new';
     item.addEventListener('click', async function () {
         let storage_data = await browser.storage.local.get(null);
         let translation = storage_data['translation'] ?? {};
         let trans_src = document.getElementById('i-translate-src').value.trim().toLowerCase();
         let trans_res = document.getElementById(item.dataset.trans_id).innerText;
-        translation[trans_src] = trans_res;
+        if (append) {
+            if (!translation[trans_src]) {
+                translation[trans_src] = trans_res;
+            } else {
+                let tmp = translation[trans_src].split('; ');
+                if (!tmp.includes(trans_res)) {
+                    translation[trans_src] = translation[trans_src] + '; ' + trans_res;
+                }
+            }
+        } else {
+            translation[trans_src] = trans_res;
+        }
         await browser.storage.local.set({
             'translation': translation,
             'latest': trans_src
@@ -55,12 +66,14 @@ function drawTranslateResult(result) {
         .map((item) => {
             let id = 'trans-save' + hashCode(item);
             return `
-            <span class="trans-save" data-trans_id="${id}">💾</span>
+            <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
+            <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
             <span id="${id}">${item}</span>
             `;
         })
         .join('<span style="display:block;height:5px;"></span>');
-    document.querySelectorAll('.trans-save').forEach((item) => transSave(item));
+    document.querySelectorAll('.trans-new').forEach((item) => transSave(item));
+    document.querySelectorAll('.trans-append').forEach((item) => transSave(item, true));
 }
 
 function runApiTranslated(lanf_from, lang_to, query) {
