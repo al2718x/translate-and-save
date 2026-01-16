@@ -215,7 +215,7 @@ async function refresh() {
     }
     let pairsSorted = new Map([...pairs.entries()].sort());
     iPairs.innerHTML = '';
-    iExport.innerHTML = '';
+    let export_text = '';
     pairsSorted.forEach((value, key, map) => {
         let id = 'trans-delete' + hashCode(key);
         let latest_str = key === latest ? ' class="latest"' : '';
@@ -226,8 +226,9 @@ async function refresh() {
             <span class="trans-edit" contenteditable="true" data-trans_id="${id}">${value}</span>
             </div>
             `;
-        iExport.innerHTML += `${key}|${value}\r\n`;
+        export_text += `${key}|${value}\r\n`;
     });
+    iExport.innerHTML = export_text;
     btnExportShow.addEventListener('click', () => exportShow());
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
