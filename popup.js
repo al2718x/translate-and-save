@@ -77,7 +77,7 @@ function drawTranslateResult(result) {
 }
 
 function runApiTranslated(lanf_from, lang_to, query) {
-    console.log('TRANSLATE BY translated.net');
+    console.log('TRANSLATE BY: translated.net');
     let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${encodeURIComponent(query)}`;
     fetch(request).then(function (response) {
         return response.json();
@@ -100,7 +100,7 @@ function runApiTranslated(lanf_from, lang_to, query) {
 }
 
 function runApiGoogle(lanf_from, lang_to, query) {
-    console.log('TRANSLATE BY googleapis.com');
+    console.log('TRANSLATE BY: googleapis.com');
     let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(query)}`;
     fetch(request).then(function (response) {
         return response.json();
