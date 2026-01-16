@@ -198,7 +198,7 @@ async function refresh() {
             ${value}
             </div>
             `;
-        iExport.innerHTML += `${key} = ${value}\r\n`;
+        iExport.innerHTML += `${key}|${value}\r\n`;
     });
     btnExportShow.addEventListener('click', () => exportShow());
 
