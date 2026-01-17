@@ -188,12 +188,19 @@ async function refresh() {
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
     let iPairs = document.getElementById('i-pairs');
+    let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
 
     selApi.addEventListener('change', () => setupSave());
     iTranslateFrom.addEventListener('blur', () => setupSave());
     iTranslateTo.addEventListener('blur', () => setupSave());
+    btnSwitchFromTo.addEventListener('click', () => {
+        let tmp = iTranslateFrom.value;
+        iTranslateFrom.value = iTranslateTo.value;
+        iTranslateTo.value = tmp;
+        setupSave();
+    });
     btnExportShow.addEventListener('click', () => exportShow());
 
     let storage_data = await browser.storage.local.get(null);
