@@ -187,10 +187,14 @@ async function refresh() {
     let selApi = document.getElementById('sel-api');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
-    let btnSetupSave = document.getElementById('btn-setup-save');
     let iPairs = document.getElementById('i-pairs');
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
+
+    selApi.addEventListener('change', () => setupSave());
+    iTranslateFrom.addEventListener('blur', () => setupSave());
+    iTranslateTo.addEventListener('blur', () => setupSave());
+    btnExportShow.addEventListener('click', () => exportShow());
 
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
@@ -203,7 +207,6 @@ async function refresh() {
     selApi.value = config['api'] ?? '0';
     iTranslateFrom.value = config['translate-from'] ?? 'en';
     iTranslateTo.value = config['translate-to'] ?? 'it';
-    btnSetupSave.addEventListener('click', () => setupSave());
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';
@@ -229,7 +232,6 @@ async function refresh() {
         export_text += `${key}|${value}\r\n`;
     });
     iExport.innerHTML = export_text;
-    btnExportShow.addEventListener('click', () => exportShow());
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
     document.querySelectorAll('.trans-pick').forEach((item) => transPick(item));
