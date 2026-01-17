@@ -188,6 +188,7 @@ async function refresh() {
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
     let iPairs = document.getElementById('i-pairs');
+    let btnGoogle = document.getElementById('btn-google');
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
@@ -195,6 +196,13 @@ async function refresh() {
     selApi.addEventListener('change', () => setupSave());
     iTranslateFrom.addEventListener('blur', () => setupSave());
     iTranslateTo.addEventListener('blur', () => setupSave());
+    btnGoogle.addEventListener('click', () => {
+        let lang_from = iTranslateFrom.value;
+        let lang_to = iTranslateTo.value;
+        let query = document.getElementById('i-translate-src').value.trim();
+        let url = `https://translate.google.com/?sl=${lang_from}&tl=${lang_to}&text=${encodeURIComponent(query)}`;
+        window.open(url, '_blank');
+    });
     btnSwitchFromTo.addEventListener('click', () => {
         let tmp = iTranslateFrom.value;
         iTranslateFrom.value = iTranslateTo.value;
