@@ -150,8 +150,7 @@ function runApiGoogle(lanf_from, lang_to, query) {
     });
 }
 
-async function translate(setup_save = true) {
-    if (setup_save) await setupSave();
+async function translate() {
     let query = document.getElementById('i-translate-src').value.trim().toLowerCase();
     console.log('TRANSLATE TEXT: ' + query);
     if ('' === query) return;
@@ -193,9 +192,9 @@ async function refresh() {
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
 
-    selApi.addEventListener('change', () => setupSave());
-    iTranslateFrom.addEventListener('blur', () => setupSave());
-    iTranslateTo.addEventListener('blur', () => setupSave());
+    selApi.addEventListener('change', () => setupSave().then(() => translate()));
+    iTranslateFrom.addEventListener('blur', () => setupSave().then(() => translate()));
+    iTranslateTo.addEventListener('blur', () => setupSave().then(() => translate()));
     btnGoogle.addEventListener('click', () => {
         let lang_from = iTranslateFrom.value;
         let lang_to = iTranslateTo.value;
@@ -265,7 +264,7 @@ function textareaEvents() {
 
 (async function run() {
     await getSelectedText();
-    await translate(false);
+    await translate();
     await refresh();
     textareaEvents();
 })();
