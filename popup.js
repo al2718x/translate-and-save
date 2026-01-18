@@ -55,17 +55,25 @@ function transDelete(item) {
 
 function transEdit(item) {
     item.title = 'Edit';
-    item.addEventListener('blur', async function () {
-        let storage_data = await browser.storage.local.get(null);
-        let translation = storage_data['translation'] ?? {};
-        let trans = document.getElementById(item.dataset.trans_id).innerText;
-        let new_trans = item.innerText.trim();
-        if (new_trans) {
-            translation[trans] = item.innerText;
+    item.addEventListener('blur', transUpdate);
+    item.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            transUpdate(event);
         }
-        await browser.storage.local.set({ 'translation': translation });
-        refresh();
-    });
+    })
+}
+
+async function transUpdate(event) {
+    let storage_data = await browser.storage.local.get(null);
+    let translation = storage_data['translation'] ?? {};
+    let trans = document.getElementById(event.target.dataset.trans_id).innerText;
+    let new_trans = event.target.innerText.trim();
+    if (new_trans) {
+        translation[trans] = event.target.innerText;
+    }
+    await browser.storage.local.set({ 'translation': translation });
+    refresh();
 }
 
 function transPick(item) {
