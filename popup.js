@@ -196,6 +196,16 @@ async function refresh() {
     selApi.addEventListener('change', () => setupSave().then(() => translate()));
     iTranslateFrom.addEventListener('blur', () => setupSave().then(() => translate()));
     iTranslateTo.addEventListener('blur', () => setupSave().then(() => translate()));
+    iTranslateFrom.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            setupSave().then(() => translate());
+        }
+    });
+    iTranslateTo.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            setupSave().then(() => translate());
+        }
+    })
     btnGoogle.addEventListener('click', () => {
         let lang_from = iTranslateFrom.value;
         let lang_to = iTranslateTo.value;
