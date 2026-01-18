@@ -172,10 +172,11 @@ function exportShow() {
 }
 
 async function getSelectedText() {
-    let iTranslateSrc = document.getElementById('i-translate-src');
     try {
-        let tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+        let tabs = await browser.tabs.query({ currentWindow: true, active: true });
+        let tab = tabs[0];
         let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
+        let iTranslateSrc = document.getElementById('i-translate-src');
         iTranslateSrc.value = selectedText;
     } catch (e) {
         console.log('GET SELECTED TEXT ERROR: ', e);
