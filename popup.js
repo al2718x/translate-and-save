@@ -11,6 +11,7 @@ async function setupSave() {
     config['api'] = document.getElementById('sel-api').value;
     config['translate-from'] = document.getElementById('i-translate-from').value;
     config['translate-to'] = document.getElementById('i-translate-to').value;
+    config['export-pattern'] = document.getElementById('i-export-pattern').value;
     await browser.storage.local.set({ 'config': config });
 }
 
@@ -195,6 +196,7 @@ async function refresh() {
     let selApi = document.getElementById('sel-api');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
+    let iExportPattern = document.getElementById('i-export-pattern');
     let iPairs = document.getElementById('i-pairs');
     let btnGoogle = document.getElementById('btn-google');
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
@@ -212,6 +214,12 @@ async function refresh() {
     iTranslateTo.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             setupSave().then(() => translate());
+        }
+    });
+    iExportPattern.addEventListener('blur', () => setupSave().then(() => refresh()));
+    iExportPattern.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            setupSave().then(() => refresh());
         }
     })
     btnGoogle.addEventListener('click', () => {
@@ -240,6 +248,7 @@ async function refresh() {
     selApi.value = config['api'] ?? '0';
     iTranslateFrom.value = config['translate-from'] ?? 'en';
     iTranslateTo.value = config['translate-to'] ?? 'it';
+    iExportPattern.value = config['export-pattern'] ?? '{from}|{to}';
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';
@@ -252,6 +261,7 @@ async function refresh() {
     let pairsSorted = new Map([...pairs.entries()].sort());
     iPairs.innerHTML = '';
     let export_text = '';
+    let export_pattern = config['export-pattern'] ?? '{from}|{to}';
     pairsSorted.forEach((value, key, map) => {
         let id = 'trans-delete' + hashCode(key);
         let latest_str = key === latest ? ' class="latest"' : '';
@@ -262,7 +272,7 @@ async function refresh() {
             <span class="trans-edit" contenteditable="true" data-trans_id="${id}">${value}</span>
             </div>
             `;
-        export_text += `${key}|${value}\r\n`;
+        export_text += export_pattern.replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
     });
     iExport.innerHTML = export_text;
 

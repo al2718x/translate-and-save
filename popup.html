@@ -14,6 +14,20 @@
             background-color: #fff;
         }
 
+        table {
+            width: 408px;
+            margin: 4px 0;
+            padding: 0;
+            border: 0;
+            border-collapse: collapse;
+        }
+
+        tr,
+        td {
+            margin: 0;
+            padding: 0;
+        }
+
         #i-translate-src {
             width: 400px;
             max-width: 400px;
@@ -22,11 +36,6 @@
 
         #i-translate-res {
             margin: 6px 0 0 0;
-            max-width: 408px;
-        }
-
-        #i-setup {
-            margin: 4px 0;
             max-width: 408px;
         }
 
@@ -55,7 +64,11 @@
             padding: 4px 2px 0 0;
             background-color: #fff;
             cursor: pointer;
-            float: right;
+        }
+
+        #i-export-pattern {
+            width: 80px;
+            margin-right: 1px;
         }
 
         #i-pairs {
@@ -76,7 +89,7 @@
 
         .trans-delete {
             cursor: pointer;
-            color: #c00;
+            color: #700;
         }
 
         .trans-save,
@@ -90,18 +103,25 @@
     <textarea id="i-translate-src"></textarea>
     <div id="i-translate-res"></div>
     <div id="i-pairs"></div>
-    <div id="i-setup">
-        <select id="sel-api">
-            <option value="0">googleapis.com</option>
-            <option value="1">translated.net</option>
-        </select>
-        <input type="button" id="btn-google" value="☍" title="Open Google Translate">
-        &nbsp;
-        <input type="text" id="i-translate-from">
-        <input type="button" id="btn-switch-from-to" value="⥂" title="Switch">
-        <input type="text" id="i-translate-to">
-        <input type="button" id="btn-export-show" value="👁" title="Show export">
-    </div>
+    <table>
+        <tr>
+            <td>
+                <select id="sel-api">
+                    <option value="0">googleapis.com</option>
+                    <option value="1">translated.net</option>
+                </select>
+                <input type="button" id="btn-google" value="☍" title="Open Google Translate">
+                &nbsp;
+                <input type="text" id="i-translate-from" title="From">
+                <input type="button" id="btn-switch-from-to" value="⥂" title="Switch">
+                <input type="text" id="i-translate-to" title="To">
+            </td>
+            <td align="right">
+                <input type="button" id="btn-export-show" value="👁" title="Show export">
+                <input type="text" id="i-export-pattern" title="Export pattern">
+            </td>
+        </tr>
+    </table>
     <textarea id="i-export" style="display:none;"></textarea>
     <script src="popup.js"></script>
 </body>
