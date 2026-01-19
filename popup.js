@@ -216,7 +216,7 @@ async function refresh() {
     let iTranslateTo = document.getElementById('i-translate-to');
     let iExportPattern = document.getElementById('i-export-pattern');
     let iPairs = document.getElementById('i-pairs');
-    let btnGoogle = document.getElementById('btn-google');
+    let btnSiteTranslate = document.getElementById('btn-site-translate');
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
@@ -240,11 +240,14 @@ async function refresh() {
             configSave().then(() => refresh());
         }
     })
-    btnGoogle.addEventListener('click', () => {
+    btnSiteTranslate.addEventListener('click', () => {
+        let api = selApi.value;
         let lang_from = iTranslateFrom.value;
         let lang_to = iTranslateTo.value;
         let query = document.getElementById('i-translate-src').value.trim();
-        let url = `https://translate.google.com/?sl=${lang_from}&tl=${lang_to}&text=${encodeURIComponent(query)}`;
+        let url = ('1' === api) ?
+            `https://laratranslate.com/translate?source=${lang_from}&target=${lang_to}&text=${encodeURIComponent(query)}` :
+            `https://translate.google.com/?sl=${lang_from}&tl=${lang_to}&text=${encodeURIComponent(query)}`;
         window.open(url, '_blank');
     });
     btnSwitchFromTo.addEventListener('click', () => {
