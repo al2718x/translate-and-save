@@ -5,7 +5,25 @@ function hashCode(s) {
     );
 }
 
-async function setupSave() {
+async function configInit() {
+    let storage_data = await browser.storage.local.get(null);
+    let config = storage_data['config'] ?? {};
+    if (!config['api']) {
+        config['api'] = '0';
+    }
+    if (!config['translate-from']) {
+        config['translate-from'] = 'en';
+    }
+    if (!config['translate-to']) {
+        config['translate-to'] = 'ja';
+    }
+    if (!config['export-pattern']) {
+        config['export-pattern'] = '{from}|{to}';
+    }
+    await browser.storage.local.set({ 'config': config });
+}
+
+async function configSave() {
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
     config['api'] = document.getElementById('sel-api').value;
@@ -164,9 +182,9 @@ async function translate() {
     console.log('TRANSLATE TEXT: ' + query);
     if ('' === query) return;
     let storage_data = await browser.storage.local.get(null);
-    let api = storage_data['config']['api'] ?? '0';
-    let lang_from = storage_data['config']['translate-from'] ?? 'en';
-    let lang_to = storage_data['config']['translate-to'] ?? 'it';
+    let api = storage_data['config']['api'];
+    let lang_from = storage_data['config']['translate-from'];
+    let lang_to = storage_data['config']['translate-to'];
     switch (api) {
         case '1':
             runApiTranslated(lang_from, lang_to, query);
@@ -203,23 +221,23 @@ async function refresh() {
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
 
-    selApi.addEventListener('change', () => setupSave().then(() => translate()));
-    iTranslateFrom.addEventListener('blur', () => setupSave().then(() => translate()));
-    iTranslateTo.addEventListener('blur', () => setupSave().then(() => translate()));
+    selApi.addEventListener('change', () => configSave().then(() => translate()));
+    iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
+    iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
     iTranslateFrom.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            setupSave().then(() => translate());
+            configSave().then(() => translate());
         }
     });
     iTranslateTo.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            setupSave().then(() => translate());
+            configSave().then(() => translate());
         }
     });
-    iExportPattern.addEventListener('blur', () => setupSave().then(() => refresh()));
+    iExportPattern.addEventListener('blur', () => configSave().then(() => refresh()));
     iExportPattern.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            setupSave().then(() => refresh());
+            configSave().then(() => refresh());
         }
     })
     btnGoogle.addEventListener('click', () => {
@@ -233,22 +251,16 @@ async function refresh() {
         let tmp = iTranslateFrom.value;
         iTranslateFrom.value = iTranslateTo.value;
         iTranslateTo.value = tmp;
-        setupSave();
+        configSave();
     });
     btnExportShow.addEventListener('click', () => exportShow());
 
     let storage_data = await browser.storage.local.get(null);
     let config = storage_data['config'] ?? {};
-    if (!config['api'] || !config['translate-from'] || !config['translate-to']) {
-        config['api'] = '0';
-        config['translate-from'] = 'en';
-        config['translate-to'] = 'it';
-        await browser.storage.local.set({ 'config': config });
-    }
-    selApi.value = config['api'] ?? '0';
-    iTranslateFrom.value = config['translate-from'] ?? 'en';
-    iTranslateTo.value = config['translate-to'] ?? 'it';
-    iExportPattern.value = config['export-pattern'] ?? '{from}|{to}';
+    selApi.value = config['api'];
+    iTranslateFrom.value = config['translate-from'];
+    iTranslateTo.value = config['translate-to'];
+    iExportPattern.value = config['export-pattern'];
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';
@@ -261,7 +273,6 @@ async function refresh() {
     let pairsSorted = new Map([...pairs.entries()].sort());
     iPairs.innerHTML = '';
     let export_text = '';
-    let export_pattern = config['export-pattern'] ?? '{from}|{to}';
     pairsSorted.forEach((value, key, map) => {
         let id = 'trans-delete' + hashCode(key);
         let latest_str = key === latest ? ' class="latest"' : '';
@@ -272,7 +283,7 @@ async function refresh() {
             <span class="trans-edit" contenteditable="true" data-trans_id="${id}">${value}</span>
             </div>
             `;
-        export_text += export_pattern.replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
+        export_text += config['export-pattern'].replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
     });
     iExport.innerHTML = export_text;
 
@@ -309,6 +320,7 @@ async function awaitWithTimeout(promise, timeoutMs = 500) {
 
 (async function run() {
     await awaitWithTimeout(getSelectedText());
+    await configInit();
     await translate();
     await refresh();
     textareaEvents();
