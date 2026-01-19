@@ -281,8 +281,24 @@ function textareaEvents() {
     });
 }
 
+async function awaitWithTimeout(promise, timeoutMs = 500) {
+    const timeout = new Promise(
+        (_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs)
+    );
+    try {
+        return await Promise.race([promise, timeout]);
+    } catch (error) {
+        if (error.message === 'Timeout') {
+            console.log('Operation timed out after 1 second');
+            return null;
+        }
+        console.log(error.message);
+        throw error;
+    }
+}
+
 (async function run() {
-    await getSelectedText();
+    await awaitWithTimeout(getSelectedText());
     await translate();
     await refresh();
     textareaEvents();
