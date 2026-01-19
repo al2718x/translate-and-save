@@ -221,6 +221,13 @@ async function refresh() {
     let btnExportShow = document.getElementById('btn-export-show');
     let iExport = document.getElementById('i-export');
 
+    let storage_data = await browser.storage.local.get(null);
+    let config = storage_data['config'] ?? {};
+    selApi.value = config['api'];
+    iTranslateFrom.value = config['translate-from'];
+    iTranslateTo.value = config['translate-to'];
+    iExportPattern.value = config['export-pattern'];
+
     selApi.addEventListener('change', () => configSave().then(() => translate()));
     iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
     iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
@@ -241,9 +248,9 @@ async function refresh() {
         }
     })
     btnSiteTranslate.addEventListener('click', () => {
-        let api = selApi.value;
-        let lang_from = iTranslateFrom.value;
-        let lang_to = iTranslateTo.value;
+        let api = config['api'];
+        let lang_from = config['translate-from'];
+        let lang_to = config['translate-to'];
         let query = document.getElementById('i-translate-src').value.trim();
         let url = ('1' === api) ?
             `https://laratranslate.com/translate?source=${lang_from}&target=${lang_to}&text=${encodeURIComponent(query)}` :
@@ -257,13 +264,6 @@ async function refresh() {
         configSave();
     });
     btnExportShow.addEventListener('click', () => exportShow());
-
-    let storage_data = await browser.storage.local.get(null);
-    let config = storage_data['config'] ?? {};
-    selApi.value = config['api'];
-    iTranslateFrom.value = config['translate-from'];
-    iTranslateTo.value = config['translate-to'];
-    iExportPattern.value = config['export-pattern'];
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';
