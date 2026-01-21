@@ -87,9 +87,9 @@ async function transUpdate(event) {
     let storage_data = await browser.storage.local.get(null);
     let translation = storage_data['translation'] ?? {};
     let trans = document.getElementById(event.target.dataset.trans_id).innerText;
-    let new_trans = event.target.innerText.trim();
+    let new_trans = event.target.innerText.trim().replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ');
     if (new_trans) {
-        translation[trans] = event.target.innerText;
+        translation[trans] = new_trans;
     }
     await browser.storage.local.set({ 'translation': translation });
     refresh();
