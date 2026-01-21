@@ -198,6 +198,11 @@ function exportShow() {
     document.getElementById('i-export').style.display = null;
 }
 
+function exportCopy() {
+    let iExport = document.getElementById('i-export');
+    navigator.clipboard.writeText(iExport.value);
+}
+
 async function getSelectedText() {
     try {
         let tabs = await browser.tabs.query({ currentWindow: true, active: true });
@@ -219,6 +224,7 @@ async function refresh() {
     let btnSiteTranslate = document.getElementById('btn-site-translate');
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
     let btnExportShow = document.getElementById('btn-export-show');
+    let btnExportCopy = document.getElementById('btn-export-copy');
     let iExport = document.getElementById('i-export');
 
     let storage_data = await browser.storage.local.get(null);
@@ -264,6 +270,7 @@ async function refresh() {
         configSave();
     });
     btnExportShow.addEventListener('click', () => exportShow());
+    btnExportCopy.addEventListener('click', () => exportCopy());
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';
