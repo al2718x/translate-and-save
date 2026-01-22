@@ -203,6 +203,17 @@ function exportCopy() {
     navigator.clipboard.writeText(iExport.value);
 }
 
+function exportSave(filename) {
+    let iExport = document.getElementById('i-export');
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(iExport.value));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
 async function getSelectedText() {
     try {
         let tabs = await browser.tabs.query({ currentWindow: true, active: true });
@@ -225,6 +236,7 @@ async function refresh() {
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
     let btnExportShow = document.getElementById('btn-export-show');
     let btnExportCopy = document.getElementById('btn-export-copy');
+    let btnExportSave = document.getElementById('btn-export-save');
     let iExport = document.getElementById('i-export');
 
     let storage_data = await browser.storage.local.get(null);
@@ -271,6 +283,7 @@ async function refresh() {
     });
     btnExportShow.addEventListener('click', () => exportShow());
     btnExportCopy.addEventListener('click', () => exportCopy());
+    btnExportSave.addEventListener('click', () => exportSave(config['translate-from'] + '-' + config['translate-to'] + '.txt'));
 
     let translation = storage_data['translation'] ?? {};
     let latest = storage_data['latest'] ?? '';

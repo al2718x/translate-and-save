@@ -52,19 +52,18 @@
         }
 
         #btn-site-translate,
-        #btn-switch-from-to {
+        #btn-switch-from-to,
+        #btn-export-show,
+        #btn-export-copy,
+        #btn-export-save {
             border: none;
-            padding: 4px 0;
+            padding: 4px 0 0 0;
             background-color: #fff;
             cursor: pointer;
         }
 
-        #btn-export-show,
-        #btn-export-copy {
-            border: none;
-            padding: 4px 1px 0 0;
-            background-color: #fff;
-            cursor: pointer;
+        #btn-export-save {
+            text-decoration: underline;
         }
 
         #i-export-pattern {
@@ -120,6 +119,7 @@
             <td align="right">
                 <input type="button" id="btn-export-show" value="▽" title="Show export">
                 <input type="button" id="btn-export-copy" value="⎙" title="Copy to clipboard">
+                <input type="button" id="btn-export-save" value="⇩" title="Save to file">
                 <input type="text" id="i-export-pattern" title="Export pattern">
             </td>
         </tr>
