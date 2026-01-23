@@ -28,7 +28,13 @@
         if (!config['export-pattern']) {
             config['export-pattern'] = '{from}|{to}';
         }
-        await browser.storage.local.set({ 'config': config });
+        let profiles = storage_data['profiles'] ?? {};
+        let current_profile = config['translate-from'] + '-' + config['translate-to'];
+        profiles[current_profile] = current_profile;
+        await browser.storage.local.set({
+            'config': config,
+            'profiles': profiles
+        });
         selApi.value = config['api'];
         iTranslateFrom.value = config['translate-from'];
         iTranslateTo.value = config['translate-to'];
@@ -43,16 +49,28 @@
             t = setTimeout(() => translate(), 500);
         });
         selApi.addEventListener('change', () => configSave().then(() => translate()));
-        iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
-        iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
+        iTranslateFrom.addEventListener('blur', () => configSave().then(() => {
+            translate();
+            refresh();
+        }));
+        iTranslateTo.addEventListener('blur', () => configSave().then(() => {
+            translate();
+            refresh();
+        }));
         iTranslateFrom.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => translate());
+                configSave().then(() => {
+                    translate();
+                    refresh();
+                });
             }
         });
         iTranslateTo.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => translate());
+                configSave().then(() => {
+                    translate();
+                    refresh();
+                });
             }
         });
         iExportPattern.addEventListener('blur', () => configSave().then(() => refresh()));
@@ -75,7 +93,10 @@
             let tmp = iTranslateFrom.value;
             iTranslateFrom.value = iTranslateTo.value;
             iTranslateTo.value = tmp;
-            configSave().then(() => translate());
+            configSave().then(() => {
+                translate();
+                refresh();
+            });
         });
         btnExportShow.addEventListener('click', () => exportShow());
         btnExportCopy.addEventListener('click', () => exportCopy());
@@ -96,14 +117,24 @@
         config['translate-from'] = document.getElementById('i-translate-from').value;
         config['translate-to'] = document.getElementById('i-translate-to').value;
         config['export-pattern'] = document.getElementById('i-export-pattern').value;
-        await browser.storage.local.set({ 'config': config });
+        let profiles = storage_data['profiles'] ?? {};
+        let current_profile = config['translate-from'] + '-' + config['translate-to'];
+        profiles[current_profile] = current_profile;
+        await browser.storage.local.set({
+            'config': config,
+            'profiles': profiles
+        });
+    }
+
+    function transKey() {
+        return '-' + iTranslateFrom.value + '-' + iTranslateTo.value;
     }
 
     function transSave(item, append = false) {
         item.title = (append) ? 'Save append' : 'Save new';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
-            let translation = storage_data['translation'] ?? {};
+            let translation = storage_data['translation' + transKey()] ?? {};
             let trans_src = iTranslateSrc.value.trim().toLowerCase();
             let trans_res = document.getElementById(item.dataset.trans_id).innerText;
             if (append) {
@@ -119,8 +150,8 @@
                 translation[trans_src] = trans_res;
             }
             await browser.storage.local.set({
-                'translation': translation,
-                'latest': trans_src
+                ['translation' + transKey()]: translation,
+                ['latest' + transKey()]: trans_src
             });
             refresh();
         });
@@ -130,10 +161,10 @@
         item.title = 'Delete';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
-            let translation = storage_data['translation'] ?? {};
+            let translation = storage_data['translation' + transKey()] ?? {};
             let trans = document.getElementById(item.dataset.trans_id).innerText;
             delete translation[trans];
-            await browser.storage.local.set({ 'translation': translation });
+            await browser.storage.local.set({ ['translation' + transKey()]: translation });
             refresh();
         });
     }
@@ -151,15 +182,15 @@
 
     async function transUpdate(event) {
         let storage_data = await browser.storage.local.get(null);
-        let translation = storage_data['translation'] ?? {};
+        let translation = storage_data['translation' + transKey()] ?? {};
         let trans = document.getElementById(event.target.dataset.trans_id).innerText;
         let new_trans = event.target.innerText.trim().replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ');
         if (new_trans) {
             translation[trans] = new_trans;
         }
         await browser.storage.local.set({
-            'translation': translation,
-            'latest': trans
+            ['translation' + transKey()]: translation,
+            ['latest' + transKey()]: trans
         });
         refresh();
     }
@@ -282,8 +313,8 @@
 
     async function refresh() {
         let storage_data = await browser.storage.local.get(null);
-        let translation = storage_data['translation'] ?? {};
-        let latest = storage_data['latest'] ?? '';
+        let translation = storage_data['translation' + transKey()] ?? {};
+        let latest = storage_data['latest' + transKey()] ?? '';
         let keys = Object.keys(translation);
         let pairs = new Map();
         for (let key of keys) {
