@@ -35,16 +35,13 @@
         iExportPattern.value = config['export-pattern'];
     }
 
-    function initDomTranslate() {
+    function initDom() {
         setTimeout(() => iTranslateSrc.focus(), 0);
         let t = null;
         iTranslateSrc.addEventListener('input', () => {
             if (t) clearTimeout(t);
             t = setTimeout(() => translate(), 500);
         });
-    }
-
-    function initDomOthers() {
         selApi.addEventListener('change', () => configSave().then(() => translate()));
         iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
         iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
@@ -340,9 +337,8 @@
     }
 
     await initConfig();
-    initDomOthers();
+    initDom();
     await withTimeout(getSelectedText());
     translate();
     await refresh();
-    initDomTranslate();
 })();
