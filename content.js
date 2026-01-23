@@ -19,6 +19,10 @@ function getSelectedText() {
     // if (document.readyState !== 'complete') {
     //     return '';
     // }
+    let element = document.activeElement;
+    if (element && ('INPUT' === element.tagName || 'TEXTAREA' === element.tagName)) {
+        return element.value.substring(element.selectionStart, element.selectionEnd);
+    }
     let selection = null;
     for (let i = 0; i < 100; i++) {
         selection = window.getSelection();
@@ -26,10 +30,6 @@ function getSelectedText() {
             return selection.getRangeAt(0).toString();
         }
         setTimeout(() => { }, 1);
-    }
-    let element = document.activeElement;
-    if (element && ('INPUT' === element.tagName || 'TEXTAREA' === element.tagName)) {
-        return element.value.substring(element.selectionStart, element.selectionEnd);
     }
     throw new Error('No selection');
 }
