@@ -157,7 +157,10 @@
         if (new_trans) {
             translation[trans] = new_trans;
         }
-        await browser.storage.local.set({ 'translation': translation });
+        await browser.storage.local.set({
+            'translation': translation,
+            'latest': trans
+        });
         refresh();
     }
 
@@ -176,10 +179,10 @@
                 return `
             <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
             <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
-            <span id="${id}" contenteditable="true" title="Edit">${item}</span>
+            <i id="${id}" contenteditable="true" title="Edit">${item}</i>
             `;
             })
-            .join('<span style="display:block;height:5px;"></span>');
+            .join('<span style="display:block;height:4px;"></span>');
         document.querySelectorAll('.trans-new').forEach((item) => transSave(item));
         document.querySelectorAll('.trans-append').forEach((item) => transSave(item, true));
     }

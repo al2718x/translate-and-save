@@ -16,8 +16,6 @@
 
         table {
             width: 408px;
-            margin: 4px 0;
-            padding: 0;
             border: 0;
             border-collapse: collapse;
         }
@@ -35,8 +33,16 @@
         }
 
         #i-translate-res {
-            margin: 6px 0 0 0;
+            margin: 4px 0;
             max-width: 408px;
+            color: #333;
+        }
+
+        #i-pairs {
+            margin-bottom: 4px;
+            max-width: 408px;
+            max-height: 400px;
+            overflow-y: scroll;
         }
 
         #sel-api {
@@ -71,14 +77,8 @@
             margin: 0 1px;
         }
 
-        #i-pairs {
-            margin: 4px 0 6px 0;
-            max-width: 408px;
-            max-height: 400px;
-            overflow-y: scroll;
-        }
-
         #i-export {
+            margin-top: 8px;
             width: 400px;
             height: 100px;
         }
@@ -89,7 +89,7 @@
 
         .trans-delete {
             cursor: pointer;
-            color: #700;
+            color: #900;
         }
 
         .trans-save,
@@ -100,10 +100,14 @@
 </head>
 
 <body>
-    <textarea id="i-translate-src"></textarea>
-    <div id="i-translate-res"></div>
-    <div id="i-pairs"></div>
     <table>
+        <tr>
+            <td colspan="2">
+                <textarea id="i-translate-src"></textarea>
+                <div id="i-translate-res"></div>
+                <div id="i-pairs"></div>
+            </td>
+        </tr>
         <tr>
             <td>
                 <select id="sel-api" title="Translation API">
@@ -123,8 +127,12 @@
                 <input type="text" id="i-export-pattern" title="Export pattern">
             </td>
         </tr>
+        <tr>
+            <td colspan="2">
+                <textarea id="i-export" style="display:none"></textarea>
+            </td>
+        </tr>
     </table>
-    <textarea id="i-export" style="display:none;"></textarea>
     <script src="popup.js"></script>
 </body>
 
