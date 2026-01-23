@@ -294,12 +294,12 @@ async function refresh() {
         pairs.set(key, value);
     }
     let pairsSorted = new Map([...pairs.entries()].sort());
-    iPairs.innerHTML = '';
+    let pairs_html = '';
     let export_text = '';
     pairsSorted.forEach((value, key, map) => {
         let id = 'trans-delete' + hashCode(key);
         let latest_str = key === latest ? ' class="latest"' : '';
-        iPairs.innerHTML += `
+        pairs_html += `
             <div${latest_str}>
             <span class="trans-delete" data-trans_id="${id}">☒</span>
             <b class="trans-pick" id="${id}">${key}</b>
@@ -308,6 +308,7 @@ async function refresh() {
             `;
         export_text += config['export-pattern'].replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
     });
+    iPairs.innerHTML = pairs_html;
     iExport.innerHTML = export_text;
 
     document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
@@ -325,7 +326,7 @@ function textareaEvents() {
     });
 }
 
-async function awaitWithTimeout(promise, timeoutMs = 500) {
+async function awaitWithTimeout(promise, timeoutMs = 200) {
     const timeout = new Promise(
         (_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs)
     );
@@ -333,7 +334,7 @@ async function awaitWithTimeout(promise, timeoutMs = 500) {
         return await Promise.race([promise, timeout]);
     } catch (error) {
         if (error.message === 'Timeout') {
-            console.log('Operation timed out after 1 second');
+            console.log(`Operation timed out after ${timeoutMs} ms`);
             return null;
         }
         console.log(error.message);

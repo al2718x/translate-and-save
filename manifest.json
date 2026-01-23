@@ -7,7 +7,7 @@
   },
   "manifest_version": 2,
   "name": "Translate and Save",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Interface for translate.googleapis.com and mymemory.translated.net API (limited free usage to 5000 chars/day).",
   "icons": {
     "96": "icons/translate-and-save.png"

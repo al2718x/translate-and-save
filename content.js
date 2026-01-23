@@ -16,9 +16,9 @@ browser.runtime.onMessage.addListener((request) => {
 });
 
 function getSelectedText() {
-    if (document.readyState !== 'complete') {
-        return '';
-    }
+    // if (document.readyState !== 'complete') {
+    //     return '';
+    // }
     let selection = null;
     for (let i = 0; i < 100; i++) {
         selection = window.getSelection();
