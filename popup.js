@@ -1,12 +1,19 @@
 (async function run() {
-    function hashCode(s) {
-        return [...s].reduce(
-            (hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0,
-            0
-        );
-    }
+    let iTranslateSrc = document.getElementById('i-translate-src');
+    let iTranslateRes = document.getElementById('i-translate-res');
+    let selApi = document.getElementById('sel-api');
+    let iTranslateFrom = document.getElementById('i-translate-from');
+    let iTranslateTo = document.getElementById('i-translate-to');
+    let iExportPattern = document.getElementById('i-export-pattern');
+    let iPairs = document.getElementById('i-pairs');
+    let btnSiteTranslate = document.getElementById('btn-site-translate');
+    let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
+    let btnExportShow = document.getElementById('btn-export-show');
+    let btnExportCopy = document.getElementById('btn-export-copy');
+    let btnExportSave = document.getElementById('btn-export-save');
+    let iExport = document.getElementById('i-export');
 
-    async function configInit() {
+    async function initConfig() {
         let storage_data = await browser.storage.local.get(null);
         let config = storage_data['config'] ?? {};
         if (!config['api']) {
@@ -22,6 +29,67 @@
             config['export-pattern'] = '{from}|{to}';
         }
         await browser.storage.local.set({ 'config': config });
+        selApi.value = config['api'];
+        iTranslateFrom.value = config['translate-from'];
+        iTranslateTo.value = config['translate-to'];
+        iExportPattern.value = config['export-pattern'];
+    }
+
+    function initDomTranslate() {
+        setTimeout(() => iTranslateSrc.focus(), 0);
+        let t = null;
+        iTranslateSrc.addEventListener('input', () => {
+            if (t) clearTimeout(t);
+            t = setTimeout(() => translate(), 500);
+        });
+    }
+
+    function initDomOthers() {
+        selApi.addEventListener('change', () => configSave().then(() => translate()));
+        iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
+        iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
+        iTranslateFrom.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                configSave().then(() => translate());
+            }
+        });
+        iTranslateTo.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                configSave().then(() => translate());
+            }
+        });
+        iExportPattern.addEventListener('blur', () => configSave().then(() => refresh()));
+        iExportPattern.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                configSave().then(() => refresh());
+            }
+        });
+        btnSiteTranslate.addEventListener('click', () => {
+            let api = selApi.value;
+            let lang_from = iTranslateFrom.value;
+            let lang_to = iTranslateTo.value;
+            let query = iTranslateSrc.value.trim();
+            let url = ('1' === api) ?
+                `https://laratranslate.com/translate?source=${lang_from}&target=${lang_to}&text=${encodeURIComponent(query)}` :
+                `https://translate.google.com/?sl=${lang_from}&tl=${lang_to}&text=${encodeURIComponent(query)}`;
+            window.open(url, '_blank');
+        });
+        btnSwitchFromTo.addEventListener('click', () => {
+            let tmp = iTranslateFrom.value;
+            iTranslateFrom.value = iTranslateTo.value;
+            iTranslateTo.value = tmp;
+            configSave().then(() => translate());
+        });
+        btnExportShow.addEventListener('click', () => exportShow());
+        btnExportCopy.addEventListener('click', () => exportCopy());
+        btnExportSave.addEventListener('click', () => exportSave(`${iTranslateFrom.value}-${iTranslateTo.value}.txt`));
+    }
+
+    function hashCode(s) {
+        return [...s].reduce(
+            (hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0,
+            0
+        );
     }
 
     async function configSave() {
@@ -39,7 +107,7 @@
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
             let translation = storage_data['translation'] ?? {};
-            let trans_src = document.getElementById('i-translate-src').value.trim().toLowerCase();
+            let trans_src = iTranslateSrc.value.trim().toLowerCase();
             let trans_res = document.getElementById(item.dataset.trans_id).innerText;
             if (append) {
                 if (!translation[trans_src]) {
@@ -99,13 +167,13 @@
     function transPick(item) {
         item.title = 'Pick';
         item.addEventListener('click', function () {
-            document.getElementById('i-translate-src').value = item.innerText;
+            iTranslateSrc.value = item.innerText;
             translate();
         });
     }
 
     function drawTranslateResult(result) {
-        document.getElementById('i-translate-res').innerHTML = result
+        iTranslateRes.innerHTML = result
             .map((item) => {
                 let id = 'trans-save' + hashCode(item);
                 return `
@@ -178,14 +246,13 @@
         });
     }
 
-    async function translate() {
-        let query = document.getElementById('i-translate-src').value.trim().toLowerCase();
+    function translate() {
+        let query = iTranslateSrc.value.trim().toLowerCase();
         console.log('TRANSLATE TEXT: ' + query);
         if ('' === query) return;
-        let storage_data = await browser.storage.local.get(null);
-        let api = storage_data['config']['api'];
-        let lang_from = storage_data['config']['translate-from'];
-        let lang_to = storage_data['config']['translate-to'];
+        let api = selApi.value;
+        let lang_from = iTranslateFrom.value;
+        let lang_to = iTranslateTo.value;
         switch (api) {
             case '1':
                 runApiTranslated(lang_from, lang_to, query);
@@ -196,16 +263,14 @@
     }
 
     function exportShow() {
-        document.getElementById('i-export').style.display = null;
+        iExport.style.display = null;
     }
 
     function exportCopy() {
-        let iExport = document.getElementById('i-export');
         navigator.clipboard.writeText(iExport.value);
     }
 
     function exportSave(filename) {
-        let iExport = document.getElementById('i-export');
         let element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(iExport.value));
         element.setAttribute('download', filename);
@@ -215,77 +280,8 @@
         document.body.removeChild(element);
     }
 
-    async function getSelectedText() {
-        try {
-            let tabs = await browser.tabs.query({ currentWindow: true, active: true });
-            let tab = tabs[0];
-            let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
-            let iTranslateSrc = document.getElementById('i-translate-src');
-            iTranslateSrc.value = selectedText;
-        } catch (e) {
-            console.log('GET SELECTED TEXT ERROR: ', e);
-        }
-    }
-
     async function refresh() {
-        let selApi = document.getElementById('sel-api');
-        let iTranslateFrom = document.getElementById('i-translate-from');
-        let iTranslateTo = document.getElementById('i-translate-to');
-        let iExportPattern = document.getElementById('i-export-pattern');
-        let iPairs = document.getElementById('i-pairs');
-        let btnSiteTranslate = document.getElementById('btn-site-translate');
-        let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
-        let btnExportShow = document.getElementById('btn-export-show');
-        let btnExportCopy = document.getElementById('btn-export-copy');
-        let btnExportSave = document.getElementById('btn-export-save');
-        let iExport = document.getElementById('i-export');
-
         let storage_data = await browser.storage.local.get(null);
-        let config = storage_data['config'] ?? {};
-        selApi.value = config['api'];
-        iTranslateFrom.value = config['translate-from'];
-        iTranslateTo.value = config['translate-to'];
-        iExportPattern.value = config['export-pattern'];
-
-        selApi.addEventListener('change', () => configSave().then(() => translate()));
-        iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
-        iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
-        iTranslateFrom.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                configSave().then(() => translate());
-            }
-        });
-        iTranslateTo.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                configSave().then(() => translate());
-            }
-        });
-        iExportPattern.addEventListener('blur', () => configSave().then(() => refresh()));
-        iExportPattern.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                configSave().then(() => refresh());
-            }
-        })
-        btnSiteTranslate.addEventListener('click', () => {
-            let api = config['api'];
-            let lang_from = config['translate-from'];
-            let lang_to = config['translate-to'];
-            let query = document.getElementById('i-translate-src').value.trim();
-            let url = ('1' === api) ?
-                `https://laratranslate.com/translate?source=${lang_from}&target=${lang_to}&text=${encodeURIComponent(query)}` :
-                `https://translate.google.com/?sl=${lang_from}&tl=${lang_to}&text=${encodeURIComponent(query)}`;
-            window.open(url, '_blank');
-        });
-        btnSwitchFromTo.addEventListener('click', () => {
-            let tmp = iTranslateFrom.value;
-            iTranslateFrom.value = iTranslateTo.value;
-            iTranslateTo.value = tmp;
-            configSave();
-        });
-        btnExportShow.addEventListener('click', () => exportShow());
-        btnExportCopy.addEventListener('click', () => exportCopy());
-        btnExportSave.addEventListener('click', () => exportSave(config['translate-from'] + '-' + config['translate-to'] + '.txt'));
-
         let translation = storage_data['translation'] ?? {};
         let latest = storage_data['latest'] ?? '';
         let keys = Object.keys(translation);
@@ -307,27 +303,27 @@
             <span class="trans-edit" contenteditable="true" data-trans_id="${id}">${value}</span>
             </div>
             `;
-            export_text += config['export-pattern'].replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
+            export_text += iExportPattern.value.replace(/{from}/g, key).replace(/{to}/g, value) + '\r\n';
         });
         iPairs.innerHTML = pairs_html;
         iExport.innerHTML = export_text;
-
         document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
         document.querySelectorAll('.trans-pick').forEach((item) => transPick(item));
         document.querySelectorAll('.trans-edit').forEach((item) => transEdit(item));
     }
 
-    function textareaEvents() {
-        let iTranslateSrc = document.getElementById('i-translate-src');
-        setTimeout(() => iTranslateSrc.focus(), 0);
-        let t = null;
-        iTranslateSrc.addEventListener('input', () => {
-            if (t) clearTimeout(t);
-            t = setTimeout(() => translate(), 500);
-        });
+    async function getSelectedText() {
+        try {
+            let tabs = await browser.tabs.query({ currentWindow: true, active: true });
+            let tab = tabs[0];
+            let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
+            iTranslateSrc.value = selectedText;
+        } catch (e) {
+            console.log('GET SELECTED TEXT ERROR: ', e);
+        }
     }
 
-    async function awaitWithTimeout(promise, timeoutMs = 200) {
+    async function withTimeout(promise, timeoutMs = 200) {
         const timeout = new Promise(
             (_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs)
         );
@@ -343,10 +339,10 @@
         }
     }
 
-    await awaitWithTimeout(getSelectedText());
-    await configInit();
-    await translate();
+    await initConfig();
+    initDomOthers();
+    await withTimeout(getSelectedText());
+    translate();
     await refresh();
-    textareaEvents();
-
+    initDomTranslate();
 })();
