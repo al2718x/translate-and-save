@@ -28,12 +28,8 @@
         if (!config['export-pattern']) {
             config['export-pattern'] = '{from}|{to}';
         }
-        let profiles = storage_data['profiles'] ?? {};
-        let current_profile = config['translate-from'] + '-' + config['translate-to'];
-        profiles[current_profile] = current_profile;
         await browser.storage.local.set({
-            'config': config,
-            'profiles': profiles
+            'config': config
         });
         selApi.value = config['api'];
         iTranslateFrom.value = config['translate-from'];
@@ -117,26 +113,24 @@
         config['translate-from'] = document.getElementById('i-translate-from').value;
         config['translate-to'] = document.getElementById('i-translate-to').value;
         config['export-pattern'] = document.getElementById('i-export-pattern').value;
-        let profiles = storage_data['profiles'] ?? {};
-        let current_profile = config['translate-from'] + '-' + config['translate-to'];
-        profiles[current_profile] = current_profile;
         await browser.storage.local.set({
-            'config': config,
-            'profiles': profiles
+            'config': config
         });
     }
 
     function transKey() {
-        return '-' + iTranslateFrom.value + '-' + iTranslateTo.value;
+        return iTranslateFrom.value + '-' + iTranslateTo.value;
     }
 
     function transSave(item, append = false) {
         item.title = (append) ? 'Save append' : 'Save new';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
-            let translation = storage_data['translation' + transKey()] ?? {};
+            let profiles = storage_data['profiles'] ?? {};
+            let translation = storage_data['data-' + transKey()] ?? {};
             let trans_src = iTranslateSrc.value.trim().toLowerCase();
             let trans_res = document.getElementById(item.dataset.trans_id).innerText;
+            profiles[transKey()] = trans_src;
             if (append) {
                 if (!translation[trans_src]) {
                     translation[trans_src] = trans_res;
@@ -150,8 +144,8 @@
                 translation[trans_src] = trans_res;
             }
             await browser.storage.local.set({
-                ['translation' + transKey()]: translation,
-                ['latest' + transKey()]: trans_src
+                'profiles': profiles,
+                ['data-' + transKey()]: translation
             });
             refresh();
         });
@@ -161,10 +155,12 @@
         item.title = 'Delete';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
-            let translation = storage_data['translation' + transKey()] ?? {};
+            let translation = storage_data['data-' + transKey()] ?? {};
             let trans = document.getElementById(item.dataset.trans_id).innerText;
             delete translation[trans];
-            await browser.storage.local.set({ ['translation' + transKey()]: translation });
+            await browser.storage.local.set({
+                ['data-' + transKey()]: translation
+            });
             refresh();
         });
     }
@@ -182,15 +178,17 @@
 
     async function transUpdate(event) {
         let storage_data = await browser.storage.local.get(null);
-        let translation = storage_data['translation' + transKey()] ?? {};
+        let profiles = storage_data['profiles'] ?? {};
+        let translation = storage_data['data-' + transKey()] ?? {};
         let trans = document.getElementById(event.target.dataset.trans_id).innerText;
         let new_trans = event.target.innerText.trim().replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ');
         if (new_trans) {
+            profiles[transKey()] = trans;
             translation[trans] = new_trans;
         }
         await browser.storage.local.set({
-            ['translation' + transKey()]: translation,
-            ['latest' + transKey()]: trans
+            'profiles': profiles,
+            ['data-' + transKey()]: translation
         });
         refresh();
     }
@@ -313,8 +311,9 @@
 
     async function refresh() {
         let storage_data = await browser.storage.local.get(null);
-        let translation = storage_data['translation' + transKey()] ?? {};
-        let latest = storage_data['latest' + transKey()] ?? '';
+        let profiles = storage_data['profiles'] ?? {};
+        let latest = profiles[transKey()] ?? '';
+        let translation = storage_data['data-' + transKey()] ?? {};
         let keys = Object.keys(translation);
         let pairs = new Map();
         for (let key of keys) {
