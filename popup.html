@@ -11,38 +11,37 @@
         }
 
         body {
+            width: 420px;
+            margin: 0;
+            padding: 0;
             background-color: #fff;
         }
 
-        table {
-            width: 408px;
-            border: 0;
-            border-collapse: collapse;
+        header {
+            width: 400px;
+            top: 0;
+            position: sticky;
+            padding: 10px 10px 6px 10px;
+            background-color: #f7f7f7;
         }
 
-        tr,
-        td {
-            margin: 0;
-            padding: 0;
+        footer {
+            width: 400px;
+            bottom: 0;
+            position: sticky;
+            padding: 10px;
+            background-color: #f7f7f7;
+        }
+
+        .main {
+            padding: 6px 10px;
         }
 
         #i-translate-src {
-            width: 400px;
-            max-width: 400px;
-            height: 17px;
-        }
-
-        #i-translate-res {
-            margin: 4px 0;
-            max-width: 408px;
-            color: #333;
-        }
-
-        #i-pairs {
+            width: 390px;
+            height: 28px;
+            padding: 3px;
             margin-bottom: 4px;
-            max-width: 408px;
-            max-height: 400px;
-            overflow-y: scroll;
         }
 
         #sel-api {
@@ -57,6 +56,10 @@
             width: 20px;
         }
 
+        #i-translate-from {
+            margin-left: 6px;
+        }
+
         #btn-site-translate,
         #btn-switch-from-to,
         #btn-export-show,
@@ -64,7 +67,7 @@
         #btn-export-save {
             border: none;
             padding: 4px 0 0 0;
-            background-color: #fff;
+            background-color: #f7f7f7;
             cursor: pointer;
         }
 
@@ -74,13 +77,14 @@
 
         #i-export-pattern {
             width: 80px;
-            margin: 0 1px;
+            margin: 0 1px 0 20px;
         }
 
         #i-export {
-            margin-top: 8px;
-            width: 400px;
-            height: 100px;
+            margin-top: 10px;
+            width: 390px;
+            height: 28px;
+            padding: 3px;
         }
 
         .latest>b {
@@ -96,43 +100,43 @@
         .trans-pick {
             cursor: pointer;
         }
+
+        .trans-item {
+            margin: 4px 0;
+        }
     </style>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td colspan="2">
-                <textarea id="i-translate-src"></textarea>
-                <div id="i-translate-res"></div>
-                <div id="i-pairs"></div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <select id="sel-api" title="Translation API">
-                    <option value="0">googleapis.com</option>
-                    <option value="1">translated.net</option>
-                </select>
-                <input type="button" id="btn-site-translate" value="☍" title="Translate on the site">
-                &nbsp;
-                <input type="text" id="i-translate-from" title="From">
-                <input type="button" id="btn-switch-from-to" value="⥂" title="Switch profile">
-                <input type="text" id="i-translate-to" title="To">
-            </td>
-            <td align="right">
-                <input type="button" id="btn-export-show" value="▽" title="Show export">
-                <input type="button" id="btn-export-copy" value="⎙" title="Copy to clipboard">
-                <input type="button" id="btn-export-save" value="⇩" title="Save to file">
-                <input type="text" id="i-export-pattern" title="Export pattern">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <textarea id="i-export" style="display:none"></textarea>
-            </td>
-        </tr>
-    </table>
+    <header>
+        <textarea id="i-translate-src"></textarea>
+        <div id="i-translate-res"></div>
+    </header>
+
+    <div class="main">
+        <div id="i-pairs"></div>
+    </div>
+
+    <footer>
+        <div>
+            <select id="sel-api" title="Translation API">
+                <option value="0">googleapis.com</option>
+                <option value="1">translated.net</option>
+            </select>
+            <input type="button" id="btn-site-translate" value="☍" title="Translate on the site">
+
+            <input type="text" id="i-translate-from" title="From">
+            <input type="button" id="btn-switch-from-to" value="⥂" title="Switch profile">
+            <input type="text" id="i-translate-to" title="To">
+
+            <input type="text" id="i-export-pattern" title="Export pattern">
+            <input type="button" id="btn-export-show" value="▽" title="Show/hide export">
+            <input type="button" id="btn-export-copy" value="⎙" title="Copy to clipboard">
+            <input type="button" id="btn-export-save" value="⇩" title="Save to file">
+        </div>
+        <textarea id="i-export" style="display:none"></textarea>
+    </footer>
+
     <script src="popup.js"></script>
 </body>
 

@@ -206,12 +206,15 @@
             .map((item) => {
                 let id = 'trans-save' + hashCode(item);
                 return `
-            <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
-            <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
-            <i id="${id}" contenteditable="true" title="Edit">${item}</i>
-            `;
+                <div class="trans-item">
+                <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
+                <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
+                <i id="${id}" contenteditable="true" title="Edit">${item}</i>
+                </div>
+                `;
             })
-            .join('<span style="display:block;height:4px;"></span>');
+            .join('');
+        // .join('<span style="display:block;height:4px;"></span>');
         document.querySelectorAll('.trans-new').forEach((item) => transSave(item));
         document.querySelectorAll('.trans-append').forEach((item) => transSave(item, true));
     }
@@ -292,7 +295,7 @@
     }
 
     function exportShow() {
-        iExport.style.display = null;
+        iExport.style.display = ('none' === iExport.style.display) ? null : 'none';
     }
 
     function exportCopy() {
