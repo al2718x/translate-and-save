@@ -51,28 +51,16 @@
             t = setTimeout(() => translate(), 500);
         });
         selApi.addEventListener('change', () => configSave().then(() => translate()));
-        iTranslateFrom.addEventListener('blur', () => configSave().then(() => {
-            translate();
-            refresh();
-        }));
-        iTranslateTo.addEventListener('blur', () => configSave().then(() => {
-            translate();
-            refresh();
-        }));
+        iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
+        iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
         iTranslateFrom.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => {
-                    translate();
-                    refresh();
-                });
+                configSave().then(() => translate());
             }
         });
         iTranslateTo.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => {
-                    translate();
-                    refresh();
-                });
+                configSave().then(() => translate());
             }
         });
         selProfiles.addEventListener('change', () => selectProfile());
@@ -97,10 +85,7 @@
             let tmp = iTranslateFrom.value;
             iTranslateFrom.value = iTranslateTo.value;
             iTranslateTo.value = tmp;
-            configSave().then(() => {
-                translate();
-                refresh();
-            });
+            configSave().then(() => translate());
         });
         btnExportToggle.addEventListener('click', () => exportToggle());
         btnExportCopy.addEventListener('click', () => exportCopy());
@@ -156,7 +141,7 @@
                 'profiles': profiles,
                 ['data-' + transKey()]: translation
             });
-            refresh();
+            await refresh();
         });
     }
 
@@ -170,7 +155,7 @@
             await browser.storage.local.set({
                 ['data-' + transKey()]: translation
             });
-            refresh();
+            await refresh();
         });
     }
 
@@ -199,7 +184,7 @@
             'profiles': profiles,
             ['data-' + transKey()]: translation
         });
-        refresh();
+        await refresh();
     }
 
     function transPick(item) {
@@ -228,12 +213,19 @@
         document.querySelectorAll('.trans-append').forEach((item) => transSave(item, true));
     }
 
-    function runApiTranslated(lanf_from, lang_to, query) {
+    async function runApiTranslated(lanf_from, lang_to, query) {
         console.log('TRANSLATE BY: translated.net');
         let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${encodeURIComponent(query)}`;
-        fetch(request).then(function (response) {
-            return response.json();
-        }).then(function (data) {
+        try {
+            let response = await withTimeout(fetch(request), 2000);
+            if (!response) {
+                throw new Error('Timeout');
+            }
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            let data = await response.json();
+            console.log('TRANSLATE RAW: ' + JSON.stringify(data));
             let trans_res = data?.responseData?.translatedText?.toLowerCase();
             let trans_res_all = [trans_res];
             if (data['matches']) {
@@ -246,17 +238,25 @@
             }
             console.log('TRANSLATE RESULT: ' + trans_res_all);
             drawTranslateResult(trans_res_all);
-        }).catch(function (err) {
+        } catch (err) {
             console.log('TRANSLATE ERROR: ', err);
-        });
+            iTranslateRes.innerHTML = err;
+        }
     }
 
-    function runApiGoogle(lanf_from, lang_to, query) {
+    async function runApiGoogle(lanf_from, lang_to, query) {
         console.log('TRANSLATE BY: googleapis.com');
         let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(query)}`;
-        fetch(request).then(function (response) {
-            return response.json();
-        }).then(function (data) {
+        try {
+            let response = await withTimeout(fetch(request), 2000);
+            if (!response) {
+                throw new Error('Timeout');
+            }
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            let data = await response.json();
+            console.log('TRANSLATE RAW: ' + JSON.stringify(data));
             let trans_res_all = [];
             if (data['sentences']) {
                 for (m of data['sentences']) {
@@ -282,25 +282,28 @@
             }
             console.log('TRANSLATE RESULT: ' + trans_res_all);
             drawTranslateResult(trans_res_all);
-        }).catch(function (err) {
+        } catch (err) {
             console.log('TRANSLATE ERROR: ', err);
-        });
+            iTranslateRes.innerHTML = err;
+        }
     }
 
-    function translate() {
+    async function translate() {
         let query = iTranslateSrc.value.trim().toLowerCase();
         console.log('TRANSLATE TEXT: ' + query);
-        if ('' === query) return;
-        let api = selApi.value;
-        let lang_from = iTranslateFrom.value;
-        let lang_to = iTranslateTo.value;
-        switch (api) {
-            case '1':
-                runApiTranslated(lang_from, lang_to, query);
-                break;
-            default:
-                runApiGoogle(lang_from, lang_to, query);
+        if (query !== '') {
+            let api = selApi.value;
+            let lang_from = iTranslateFrom.value;
+            let lang_to = iTranslateTo.value;
+            switch (api) {
+                case '1':
+                    await runApiTranslated(lang_from, lang_to, query);
+                    break;
+                default:
+                    await runApiGoogle(lang_from, lang_to, query);
+            }
         }
+        await refresh();
     }
 
     function selectProfile() {
@@ -311,10 +314,7 @@
         if (!translate_from || !translate_to) return;
         iTranslateFrom.value = translate_from;
         iTranslateTo.value = translate_to;
-        configSave().then(() => {
-            translate();
-            refresh();
-        });
+        configSave().then(() => translate());
     }
 
     function profilesShow(show) {
@@ -421,7 +421,7 @@
         }
     }
 
-    async function withTimeout(promise, timeoutMs = 200) {
+    async function withTimeout(promise, timeoutMs) {
         const timeout = new Promise(
             (_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs)
         );
@@ -439,7 +439,6 @@
 
     await initConfig();
     initDom();
-    await withTimeout(getSelectedText());
-    translate();
-    await refresh();
+    await withTimeout(getSelectedText(), 200);
+    await translate();
 })();
