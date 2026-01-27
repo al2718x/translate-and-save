@@ -10,7 +10,7 @@
     let iPairs = document.getElementById('i-pairs');
     let btnSiteTranslate = document.getElementById('btn-site-translate');
     let btnSwitchFromTo = document.getElementById('btn-switch-from-to');
-    let btnExportShow = document.getElementById('btn-export-show');
+    let btnExportToggle = document.getElementById('btn-export-toggle');
     let btnExportCopy = document.getElementById('btn-export-copy');
     let btnExportSave = document.getElementById('btn-export-save');
     let iExport = document.getElementById('i-export');
@@ -102,7 +102,7 @@
                 refresh();
             });
         });
-        btnExportShow.addEventListener('click', () => exportShow());
+        btnExportToggle.addEventListener('click', () => exportToggle());
         btnExportCopy.addEventListener('click', () => exportCopy());
         btnExportSave.addEventListener('click', () => exportSave(`${iTranslateFrom.value}-${iTranslateTo.value}.txt`));
     }
@@ -340,8 +340,16 @@
         profilesShow('none' === selProfiles.style.display);
     }
 
-    function exportShow() {
-        iExport.style.display = ('none' === iExport.style.display) ? null : 'none';
+    function exportToggle() {
+        if ('none' === iExport.style.display) {
+            iExport.style.display = null;
+            btnExportToggle.value = '△';
+            btnExportToggle.title = 'Hide export';
+        } else {
+            iExport.style.display = 'none';
+            btnExportToggle.value = '▽';
+            btnExportToggle.title = 'Show export';
+        }
     }
 
     function exportCopy() {
