@@ -11,14 +11,14 @@
         }
 
         body {
-            width: 420px;
+            width: 480px;
             margin: 0;
             padding: 0;
             background-color: #fff;
         }
 
         header {
-            width: 400px;
+            width: 460px;
             top: 0;
             position: sticky;
             padding: 10px 10px 6px 10px;
@@ -26,7 +26,7 @@
         }
 
         footer {
-            width: 400px;
+            width: 460px;
             bottom: 0;
             position: sticky;
             padding: 10px;
@@ -34,19 +34,21 @@
         }
 
         .main {
+            width: 460px;
             padding: 6px 10px;
         }
 
         #i-translate-src {
-            width: 390px;
+            width: 450px;
             height: 28px;
             padding: 3px;
             margin-bottom: 4px;
         }
 
-        #sel-api {
-            border: 1px solid #777;
-            border-radius: 3px;
+        #sel-api,
+        #sel-profiles {
+            border: 1px solid #999;
+            border-radius: 2px;
             background-color: #fff;
             height: 20px;
         }
@@ -57,11 +59,17 @@
         }
 
         #i-translate-from {
-            margin-left: 6px;
+            margin-left: 8px;
+        }
+
+        #sel-profiles {
+            width: 72px;
+            margin-left: 8px;
         }
 
         #btn-site-translate,
         #btn-switch-from-to,
+        #btn-profiles-toggle,
         #btn-export-show,
         #btn-export-copy,
         #btn-export-save {
@@ -76,13 +84,13 @@
         }
 
         #i-export-pattern {
-            width: 80px;
-            margin: 0 1px 0 20px;
+            width: 90px;
+            margin-left: 8px;
         }
 
         #i-export {
             margin-top: 10px;
-            width: 390px;
+            width: 450px;
             height: 28px;
             padding: 3px;
         }
@@ -126,8 +134,10 @@
             <input type="button" id="btn-site-translate" value="☍" title="Translate on the site">
 
             <input type="text" id="i-translate-from" title="From">
-            <input type="button" id="btn-switch-from-to" value="⥂" title="Switch profile">
+            <input type="button" id="btn-switch-from-to" value="⥂" title="Switch">
             <input type="text" id="i-translate-to" title="To">
+            <select id="sel-profiles" title="Profiles"></select>
+            <input type="button" id="btn-profiles-toggle">
 
             <input type="text" id="i-export-pattern" title="Export pattern">
             <input type="button" id="btn-export-show" value="▽" title="Show/hide export">

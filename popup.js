@@ -4,6 +4,8 @@
     let selApi = document.getElementById('sel-api');
     let iTranslateFrom = document.getElementById('i-translate-from');
     let iTranslateTo = document.getElementById('i-translate-to');
+    let selProfiles = document.getElementById('sel-profiles');
+    let btnProfilesToggle = document.getElementById('btn-profiles-toggle');
     let iExportPattern = document.getElementById('i-export-pattern');
     let iPairs = document.getElementById('i-pairs');
     let btnSiteTranslate = document.getElementById('btn-site-translate');
@@ -25,6 +27,9 @@
         if (!config['translate-to']) {
             config['translate-to'] = 'ja';
         }
+        if (!config['show-profiles']) {
+            config['show-profiles'] = false;
+        }
         if (!config['export-pattern']) {
             config['export-pattern'] = '{from}|{to}';
         }
@@ -35,6 +40,7 @@
         iTranslateFrom.value = config['translate-from'];
         iTranslateTo.value = config['translate-to'];
         iExportPattern.value = config['export-pattern'];
+        profilesShow(config['show-profiles']);
     }
 
     function initDom() {
@@ -69,6 +75,8 @@
                 });
             }
         });
+        selProfiles.addEventListener('change', () => selectProfile());
+        btnProfilesToggle.addEventListener('click', () => profilesToggle());
         iExportPattern.addEventListener('blur', () => configSave().then(() => refresh()));
         iExportPattern.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -109,10 +117,11 @@
     async function configSave() {
         let storage_data = await browser.storage.local.get(null);
         let config = storage_data['config'] ?? {};
-        config['api'] = document.getElementById('sel-api').value;
-        config['translate-from'] = document.getElementById('i-translate-from').value;
-        config['translate-to'] = document.getElementById('i-translate-to').value;
-        config['export-pattern'] = document.getElementById('i-export-pattern').value;
+        config['api'] = selApi.value;
+        config['translate-from'] = iTranslateFrom.value;
+        config['translate-to'] = iTranslateTo.value;
+        config['show-profiles'] = selProfiles.style.display !== 'none';
+        config['export-pattern'] = iExportPattern.value;
         await browser.storage.local.set({
             'config': config
         });
@@ -294,6 +303,43 @@
         }
     }
 
+    function selectProfile() {
+        let key = selProfiles.value;
+        console.log('SELECT PROFILE: ' + key);
+        let translate_from = key.split('-')[0];
+        let translate_to = key.split('-')[1];
+        if (!translate_from || !translate_to) return;
+        iTranslateFrom.value = translate_from;
+        iTranslateTo.value = translate_to;
+        configSave().then(() => {
+            translate();
+            refresh();
+        });
+    }
+
+    function profilesShow(show) {
+        if (show) {
+            iTranslateFrom.style.display = 'none';
+            iTranslateTo.style.display = 'none';
+            btnSwitchFromTo.style.display = 'none';
+            selProfiles.style.display = null;
+            btnProfilesToggle.value = '△';
+            btnProfilesToggle.title = 'Edit profiles';
+        } else {
+            selProfiles.style.display = 'none';
+            iTranslateFrom.style.display = null;
+            iTranslateTo.style.display = null;
+            btnSwitchFromTo.style.display = null;
+            btnProfilesToggle.value = '▽';
+            btnProfilesToggle.title = 'Show profiles selector';
+        }
+        configSave();
+    }
+
+    function profilesToggle() {
+        profilesShow('none' === selProfiles.style.display);
+    }
+
     function exportShow() {
         iExport.style.display = ('none' === iExport.style.display) ? null : 'none';
     }
@@ -316,6 +362,17 @@
         let storage_data = await browser.storage.local.get(null);
         let profiles = storage_data['profiles'] ?? {};
         let latest = profiles[transKey()] ?? '';
+        let keys_profiles = Object.keys(profiles);
+        selProfiles.innerHTML = '';
+        for (let key of keys_profiles) {
+            let option = document.createElement('option');
+            option.value = key;
+            option.text = key.replace(/-/g, ' \u2192 ');
+            if (key === transKey()) {
+                option.selected = true;
+            }
+            selProfiles.appendChild(option);
+        }
         let translation = storage_data['data-' + transKey()] ?? {};
         let keys = Object.keys(translation);
         let pairs = new Map();
