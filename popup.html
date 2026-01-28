@@ -50,21 +50,13 @@
             border: 1px solid #999;
             border-radius: 2px;
             background-color: #fff;
+            min-width: 80px;
             height: 20px;
         }
 
         #i-translate-from,
         #i-translate-to {
-            width: 20px;
-        }
-
-        #i-translate-from {
-            margin-left: 8px;
-        }
-
-        #sel-profiles {
-            width: 72px;
-            margin-left: 8px;
+            width: 24px;
         }
 
         #btn-site-translate,
@@ -84,8 +76,7 @@
         }
 
         #i-export-pattern {
-            width: 90px;
-            margin-left: 8px;
+            width: 80px;
         }
 
         #i-export {
@@ -112,6 +103,16 @@
         .trans-item {
             margin: 4px 0;
         }
+
+        .space {
+            width: 8px;
+            display: inline-block;
+        }
+
+        .right {
+            float: right;
+            padding-right: 1px;
+        }
     </style>
 </head>
 
@@ -133,16 +134,22 @@
             </select>
             <input type="button" id="btn-site-translate" value="☍" title="Translate on the site">
 
+            <span class="space"></span>
+
             <input type="text" id="i-translate-from" title="From">
             <input type="button" id="btn-switch-from-to" value="⥂" title="Switch">
             <input type="text" id="i-translate-to" title="To">
             <select id="sel-profiles" title="Profiles"></select>
             <input type="button" id="btn-profiles-toggle">
 
-            <input type="text" id="i-export-pattern" title="Export pattern">
-            <input type="button" id="btn-export-toggle" value="▽" title="Show export">
-            <input type="button" id="btn-export-copy" value="⎙" title="Copy to clipboard">
-            <input type="button" id="btn-export-save" value="⇩" title="Save to file">
+            <span class="space"></span>
+
+            <div class="right">
+                <input type="button" id="btn-export-save" value="⇩" title="Save to file">
+                <input type="button" id="btn-export-copy" value="⎙" title="Copy to clipboard">
+                <input type="button" id="btn-export-toggle" value="▽" title="Show export">
+                <input type="text" id="i-export-pattern" title="Export pattern">
+            </div>
         </div>
         <textarea id="i-export" style="display:none"></textarea>
     </footer>
