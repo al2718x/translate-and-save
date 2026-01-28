@@ -116,7 +116,7 @@
         return iTranslateFrom.value + '-' + iTranslateTo.value;
     }
 
-    function transSave(item, append = false) {
+    function pairSave(item, append = false) {
         item.title = (append) ? 'Save append' : 'Save new';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
@@ -145,7 +145,7 @@
         });
     }
 
-    function transDelete(item) {
+    function pairDelete(item) {
         item.title = 'Delete';
         item.addEventListener('click', async function () {
             let storage_data = await browser.storage.local.get(null);
@@ -159,18 +159,18 @@
         });
     }
 
-    function transEdit(item) {
+    function pairEdit(item) {
         item.title = 'Edit';
-        item.addEventListener('blur', transUpdate);
+        item.addEventListener('blur', (event) => pairUpdate(event));
         item.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                transUpdate(event);
+                pairUpdate(event);
             }
         })
     }
 
-    async function transUpdate(event) {
+    async function pairUpdate(event) {
         let storage_data = await browser.storage.local.get(null);
         let profiles = storage_data['profiles'] ?? {};
         let translation = storage_data['data-' + transKey()] ?? {};
@@ -187,7 +187,7 @@
         await refresh();
     }
 
-    function transPick(item) {
+    function pairPick(item) {
         item.title = 'Pick';
         item.addEventListener('click', function () {
             iTranslateSrc.value = item.innerText;
@@ -209,8 +209,8 @@
             })
             .join('');
         // .join('<span style="display:block;height:4px;"></span>');
-        document.querySelectorAll('.trans-new').forEach((item) => transSave(item));
-        document.querySelectorAll('.trans-append').forEach((item) => transSave(item, true));
+        document.querySelectorAll('.trans-new').forEach((item) => pairSave(item));
+        document.querySelectorAll('.trans-append').forEach((item) => pairSave(item, true));
     }
 
     async function runApiTranslated(lanf_from, lang_to, query) {
@@ -405,9 +405,9 @@
         });
         iPairs.innerHTML = pairs_html;
         iExport.innerHTML = export_text;
-        document.querySelectorAll('.trans-delete').forEach((item) => transDelete(item));
-        document.querySelectorAll('.trans-pick').forEach((item) => transPick(item));
-        document.querySelectorAll('.trans-edit').forEach((item) => transEdit(item));
+        document.querySelectorAll('.trans-delete').forEach((item) => pairDelete(item));
+        document.querySelectorAll('.trans-pick').forEach((item) => pairPick(item));
+        document.querySelectorAll('.trans-edit').forEach((item) => pairEdit(item));
     }
 
     async function getSelectedText() {
