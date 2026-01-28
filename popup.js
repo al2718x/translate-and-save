@@ -89,7 +89,7 @@
         btnExportToggle.addEventListener('click', () => exportToggle());
         btnExportCopy.addEventListener('click', () => exportCopy());
         btnExportSave.addEventListener('click', () => exportSave(`${iTranslateFrom.value}-${iTranslateTo.value}.txt`));
-        setTimeout(() => iTranslateSrc.focus(), 10);
+        setTimeout(() => iTranslateSrc.focus(), 0);
     }
 
     function hashCode(s) {
@@ -123,7 +123,7 @@
     }
 
     function transKey() {
-        return iTranslateFrom.value + '-' + iTranslateTo.value;
+        return iTranslateFrom.value + '~' + iTranslateTo.value;
     }
 
     function pairSave(item, append = false) {
@@ -218,7 +218,6 @@
                 `;
             })
             .join('');
-        // .join('<span style="display:block;height:4px;"></span>');
         document.querySelectorAll('.trans-new').forEach((item) => pairSave(item));
         document.querySelectorAll('.trans-append').forEach((item) => pairSave(item, true));
     }
@@ -319,8 +318,8 @@
     function selectProfile() {
         let key = selProfiles.value;
         console.log('SELECT PROFILE: ' + key);
-        let translate_from = key.split('-')[0];
-        let translate_to = key.split('-')[1];
+        let translate_from = key.split('~')[0];
+        let translate_to = key.split('~')[1];
         if (!translate_from || !translate_to) return;
         iTranslateFrom.value = translate_from;
         iTranslateTo.value = translate_to;
@@ -385,7 +384,7 @@
         for (let key of keys_profiles) {
             let option = document.createElement('option');
             option.value = key;
-            option.text = key.replace(/-/g, ' \u2192 ');
+            option.text = key.replace(/~/g, ' \u2192 ');
             if (key === transKey()) {
                 option.selected = true;
             }
