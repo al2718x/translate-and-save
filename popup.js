@@ -50,16 +50,16 @@
             t = setTimeout(() => translate(), 500);
         });
         selApi.addEventListener('change', () => configSave().then(() => translate()));
-        iTranslateFrom.addEventListener('blur', () => configSave().then(() => translate()));
-        iTranslateTo.addEventListener('blur', () => configSave().then(() => translate()));
+        iTranslateFrom.addEventListener('blur', () => validateAndSaveLang(iTranslateFrom.value));
+        iTranslateTo.addEventListener('blur', () => validateAndSaveLang(iTranslateTo.value));
         iTranslateFrom.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => translate());
+                validateAndSaveLang(iTranslateFrom.value);
             }
         });
         iTranslateTo.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                configSave().then(() => translate());
+                validateAndSaveLang(iTranslateTo.value);
             }
         });
         selProfiles.addEventListener('change', () => selectProfile());
@@ -97,6 +97,16 @@
             (hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0,
             0
         );
+    }
+
+    async function validateAndSaveLang(value) {
+        if (value.length < 2) {
+            await initConfig();
+        }
+        if (!/^[a-zA-Z_\-]+$/.test(value)) {
+            await initConfig();
+        }
+        configSave().then(() => translate());
     }
 
     async function configSave() {
