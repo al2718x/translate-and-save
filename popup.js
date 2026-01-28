@@ -44,7 +44,6 @@
     }
 
     function initDom() {
-        setTimeout(() => iTranslateSrc.focus(), 0);
         let t = null;
         iTranslateSrc.addEventListener('input', () => {
             if (t) clearTimeout(t);
@@ -90,6 +89,7 @@
         btnExportToggle.addEventListener('click', () => exportToggle());
         btnExportCopy.addEventListener('click', () => exportCopy());
         btnExportSave.addEventListener('click', () => exportSave(`${iTranslateFrom.value}-${iTranslateTo.value}.txt`));
+        setTimeout(() => iTranslateSrc.focus(), 10);
     }
 
     function hashCode(s) {
