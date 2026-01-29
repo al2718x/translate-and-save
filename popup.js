@@ -36,19 +36,20 @@
         await browser.storage.local.set({
             'config': config
         });
-        selApi.value = config['api'];
-        iTranslateFrom.value = config['translate-from'];
-        iTranslateTo.value = config['translate-to'];
-        iExportPattern.value = config['export-pattern'];
-        profilesShow(config['show-profiles']);
+        return storage_data;
     }
 
-    function initDom() {
+    function initDom(config) {
         let t = null;
         iTranslateSrc.addEventListener('input', () => {
             if (t) clearTimeout(t);
             t = setTimeout(() => translate(), 500);
         });
+        selApi.value = config['api'];
+        iTranslateFrom.value = config['translate-from'];
+        iTranslateTo.value = config['translate-to'];
+        iExportPattern.value = config['export-pattern'];
+        profilesShow(config['show-profiles']);
         selApi.addEventListener('change', () => configSave().then(() => translate()));
         iTranslateFrom.addEventListener('blur', () => validateAndSaveLang(iTranslateFrom.value));
         iTranslateTo.addEventListener('blur', () => validateAndSaveLang(iTranslateTo.value));
@@ -225,94 +226,96 @@
     async function runApiTranslated(lanf_from, lang_to, query) {
         console.log('TRANSLATE BY: translated.net');
         let request = `https://api.mymemory.translated.net/get?langpair=${lanf_from}|${lang_to}&q=${encodeURIComponent(query)}`;
-        try {
-            let response = await withTimeout(fetch(request), 2000);
-            if (!response) {
-                throw new Error('Timeout');
-            }
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            let data = await response.json();
-            console.log('TRANSLATE RAW: ' + JSON.stringify(data));
-            let trans_res = data?.responseData?.translatedText?.toLowerCase();
-            let trans_res_all = [trans_res];
-            if (data['matches']) {
-                for (m of data['matches']) {
-                    let tmp = m.translation.trim().toLowerCase();
-                    if ('' === tmp) continue;
-                    if (trans_res_all.includes(tmp)) continue;
-                    trans_res_all.push(tmp);
-                }
-            }
-            console.log('TRANSLATE RESULT: ' + trans_res_all);
-            drawTranslateResult(trans_res_all);
-        } catch (err) {
-            console.log('TRANSLATE ERROR: ', err);
-            iTranslateRes.innerHTML = err;
+        let response = await withTimeout(fetch(request), 2000);
+        if (!response) {
+            throw new Error('Timeout');
         }
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        let data = await response.json();
+        console.log('TRANSLATE RAW: ' + JSON.stringify(data));
+        let trans_res = data?.responseData?.translatedText?.toLowerCase();
+        let trans_res_all = [trans_res];
+        if (data['matches']) {
+            for (m of data['matches']) {
+                let tmp = m.translation.trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
+        }
+        return trans_res_all;
     }
 
     async function runApiGoogle(lanf_from, lang_to, query) {
         console.log('TRANSLATE BY: googleapis.com');
         let request = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lanf_from}&tl=${lang_to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(query)}`;
-        try {
-            let response = await withTimeout(fetch(request), 2000);
-            if (!response) {
-                throw new Error('Timeout');
-            }
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            let data = await response.json();
-            console.log('TRANSLATE RAW: ' + JSON.stringify(data));
-            let trans_res_all = [];
-            if (data['sentences']) {
-                for (m of data['sentences']) {
-                    let tmp = m.trans.trim().toLowerCase();
-                    if ('' === tmp) continue;
-                    if (trans_res_all.includes(tmp)) continue;
-                    trans_res_all.push(tmp);
-                }
-            }
-            if (data['dict']) {
-                for (m of data['dict']) {
-                    let tmp = m.terms[0].trim().toLowerCase();
-                    if ('' === tmp) continue;
-                    if (trans_res_all.includes(tmp)) continue;
-                    trans_res_all.push(tmp);
-                }
-                for (m of data['dict']) {
-                    let tmp = m.terms.join('; ');
-                    if ('' === tmp) continue;
-                    if (trans_res_all.includes(tmp)) continue;
-                    trans_res_all.push(tmp);
-                }
-            }
-            console.log('TRANSLATE RESULT: ' + trans_res_all);
-            drawTranslateResult(trans_res_all);
-        } catch (err) {
-            console.log('TRANSLATE ERROR: ', err);
-            iTranslateRes.innerHTML = err;
+        let response = await withTimeout(fetch(request), 2000);
+        if (!response) {
+            throw new Error('Timeout');
         }
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        let data = await response.json();
+        console.log('TRANSLATE RAW: ' + JSON.stringify(data));
+        let trans_res_all = [];
+        if (data['sentences']) {
+            for (m of data['sentences']) {
+                let tmp = m.trans.trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
+        }
+        if (data['dict']) {
+            for (m of data['dict']) {
+                let tmp = m.terms[0].trim().toLowerCase();
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
+            for (m of data['dict']) {
+                let tmp = m.terms.join('; ');
+                if ('' === tmp) continue;
+                if (trans_res_all.includes(tmp)) continue;
+                trans_res_all.push(tmp);
+            }
+        }
+        return trans_res_all;
     }
 
-    async function translate() {
+    async function translate(force_refresh = true) {
         let query = iTranslateSrc.value.trim().toLowerCase();
         console.log('TRANSLATE TEXT: ' + query);
-        if (query !== '') {
+        let do_refresh = force_refresh;
+        if ('' === query) {
+            iTranslateRes.innerHTML = '';
+        } else {
             let api = selApi.value;
             let lang_from = iTranslateFrom.value;
             let lang_to = iTranslateTo.value;
-            switch (api) {
-                case '1':
-                    await runApiTranslated(lang_from, lang_to, query);
-                    break;
-                default:
-                    await runApiGoogle(lang_from, lang_to, query);
+            try {
+                let trans_res_all = [];
+                switch (api) {
+                    case '1':
+                        trans_res_all = await runApiTranslated(lang_from, lang_to, query);
+                        break;
+                    default:
+                        trans_res_all = await runApiGoogle(lang_from, lang_to, query);
+                }
+                console.log('TRANSLATE RESULT: ' + trans_res_all);
+                drawTranslateResult(trans_res_all);
+                do_refresh = true;
+            } catch (err) {
+                console.log('TRANSLATE ERROR: ', err);
+                iTranslateRes.innerHTML = err;
             }
         }
-        await refresh();
+        if (do_refresh) {
+            await refresh();
+        }
     }
 
     function selectProfile() {
@@ -375,8 +378,7 @@
         document.body.removeChild(element);
     }
 
-    async function refresh() {
-        let storage_data = await browser.storage.local.get(null);
+    function refreshDraw(storage_data) {
         let profiles = storage_data['profiles'] ?? {};
         let latest = profiles[transKey()] ?? '';
         let keys_profiles = Object.keys(profiles);
@@ -419,6 +421,11 @@
         document.querySelectorAll('.trans-edit').forEach((item) => pairEdit(item));
     }
 
+    async function refresh() {
+        let storage_data = await browser.storage.local.get(null);
+        refreshDraw(storage_data);
+    }
+
     async function getSelectedText() {
         try {
             let tabs = await browser.tabs.query({ currentWindow: true, active: true });
@@ -446,8 +453,9 @@
         }
     }
 
-    await initConfig();
-    initDom();
+    let init_storage_data = await initConfig();
+    initDom(init_storage_data['config']);
+    refreshDraw(init_storage_data);
     await withTimeout(getSelectedText(), 200);
-    await translate();
+    await translate(false);
 })();
