@@ -166,6 +166,17 @@
             await browser.storage.local.set({
                 ['data-' + transKey()]: translation
             });
+            if (Object.keys(translation).length === 0) { //if it was last pair then delete profile too
+                let profiles = storage_data['profiles'] ?? {};
+                delete profiles[transKey()];
+                await browser.storage.local.set({
+                    'profiles': profiles
+                });
+                let config = storage_data['config'] ?? {};
+                if (config['show-profiles']) {
+                    profilesShow(false);
+                }
+            }
             await refresh();
         });
     }
@@ -383,13 +394,22 @@
         let latest = profiles[transKey()] ?? '';
         let keys_profiles = Object.keys(profiles);
         selProfiles.innerHTML = '';
+        let profile_exists = false;
         for (let key of keys_profiles) {
             let option = document.createElement('option');
             option.value = key;
             option.text = key.replace(/~/g, ' \u2192 ');
             if (key === transKey()) {
+                profile_exists = true;
                 option.selected = true;
             }
+            selProfiles.appendChild(option);
+        }
+        if (!profile_exists) { //profile was deleted with his last deleted pair, but we need to show something here
+            let option = document.createElement('option');
+            option.value = transKey();
+            option.text = transKey().replace(/~/g, ' \u2192 ');
+            option.selected = true;
             selProfiles.appendChild(option);
         }
         let translation = storage_data['data-' + transKey()] ?? {};
