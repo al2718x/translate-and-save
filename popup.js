@@ -225,7 +225,7 @@
                 return `
                 <div class="trans-item">
                 <span class="trans-save trans-new" data-trans_id="${id}">💾</span>
-                <span class="trans-save trans-append" data-trans_id="${id}">+💾</span>
+                <span class="trans-save trans-append" data-trans_id="${id}">💾💾</span>
                 <i id="${id}" contenteditable="true" title="Edit">${item}</i>
                 </div>
                 `;
