@@ -116,6 +116,25 @@
             float: right;
             padding-right: 1px;
         }
+
+        #i-spinner {
+            z-index: 100;
+            position: fixed;
+            right: 18px;
+            top: 17px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            border-top-color: #ccc;
+            animation: spin 0.75s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -156,6 +175,8 @@
         </div>
         <textarea id="i-export" style="display:none"></textarea>
     </footer>
+
+    <div id="i-spinner" style="display:none"></div>
 
     <script src="popup.js"></script>
 </body>

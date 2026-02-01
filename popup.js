@@ -14,6 +14,7 @@
     let btnExportCopy = document.getElementById('btn-export-copy');
     let btnExportSave = document.getElementById('btn-export-save');
     let iExport = document.getElementById('i-export');
+    let iSpinner = document.getElementById('i-spinner');
 
     async function initConfig() {
         let storage_data = await browser.storage.local.get(null);
@@ -307,6 +308,7 @@
             let api = selApi.value;
             let lang_from = iTranslateFrom.value;
             let lang_to = iTranslateTo.value;
+            iSpinner.style.display = null;
             try {
                 let trans_res_all = [];
                 switch (api) {
@@ -323,6 +325,7 @@
                 console.log('TRANSLATE ERROR: ', err);
                 iTranslateRes.innerHTML = err;
             }
+            iSpinner.style.display = 'none';
         }
         if (do_refresh) {
             await refresh();
