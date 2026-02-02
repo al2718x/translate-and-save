@@ -203,7 +203,7 @@
         let profiles = storage_data['profiles'] ?? {};
         let translation = storage_data['data-' + transKey()] ?? {};
         let trans = document.getElementById(event.target.dataset.trans_id).innerText;
-        let new_trans = event.target.innerText.trim().replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ');
+        let new_trans = event.target.innerText.replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ').trim();
         if (new_trans) {
             profiles[transKey()] = trans;
             translation[trans] = new_trans;
@@ -459,7 +459,7 @@
             let tabs = await browser.tabs.query({ currentWindow: true, active: true });
             let tab = tabs[0];
             let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
-            iTranslateSrc.value = selectedText.replace(/\s+\n/g, '\n').replace(/\n\s+/g, ' ');
+            iTranslateSrc.value = selectedText.replace(/\r\n\t/g, ' ').replace(/\s+/g, ' ').trim();
         } catch (e) {
             console.log('GET SELECTED TEXT ERROR: ', e);
         }
