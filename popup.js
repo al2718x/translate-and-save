@@ -459,7 +459,7 @@
             let tabs = await browser.tabs.query({ currentWindow: true, active: true });
             let tab = tabs[0];
             let selectedText = await browser.tabs.sendMessage(tab.id, { message: 'getSelectedText' });
-            iTranslateSrc.value = selectedText;
+            iTranslateSrc.value = selectedText.replace(/\s+\n/g, '\n').replace(/\n\s+/g, '\n');
         } catch (e) {
             console.log('GET SELECTED TEXT ERROR: ', e);
         }
