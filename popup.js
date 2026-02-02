@@ -15,6 +15,9 @@
     let btnExportSave = document.getElementById('btn-export-save');
     let iExport = document.getElementById('i-export');
     let iSpinner = document.getElementById('i-spinner');
+    let btnGoBack = document.getElementById('btn-go-back');
+    let btnGoForward = document.getElementById('btn-go-forward');
+    let historyPos = -1;
 
     async function initConfig() {
         let storage_data = await browser.storage.local.get(null);
@@ -91,6 +94,8 @@
         btnExportToggle.addEventListener('click', () => exportToggle());
         btnExportCopy.addEventListener('click', () => exportCopy());
         btnExportSave.addEventListener('click', () => exportSave(`${iTranslateFrom.value}-${iTranslateTo.value}.txt`));
+        btnGoBack.addEventListener('click', () => historyBack());
+        btnGoForward.addEventListener('click', () => historyForward());
         setTimeout(() => iTranslateSrc.focus(), 0);
     }
 
@@ -303,7 +308,45 @@
         return trans_res_all;
     }
 
-    async function translate(force_refresh = true) {
+    async function historyBack() {
+        let storage_data = await browser.storage.local.get(null);
+        let history = storage_data['history'] ?? [];
+        if (history.length === 0) return;
+        if (-1 === historyPos) historyPos = history.length;
+        if (0 == historyPos) return;
+        historyPos--;
+        if (iTranslateSrc.value === history[historyPos] && historyPos > 0) historyPos--;
+        iTranslateSrc.value = history[historyPos];
+        await translate(true, false);
+    }
+
+    async function historyForward() {
+        let storage_data = await browser.storage.local.get(null);
+        let history = storage_data['history'] ?? [];
+        if (history.length === 0) return;
+        if (-1 === historyPos) return;
+        if (historyPos === history.length - 1) return;
+        historyPos++;
+        iTranslateSrc.value = history[historyPos];
+        await translate(true, false);
+    }
+
+    async function historyAdd(query) {
+        historyPos = -1;
+        let storage_data = await browser.storage.local.get(null);
+        let history = storage_data['history'] ?? [];
+        let queries_to_delete = history.filter(item => item === query);
+        history = history.filter(item => !queries_to_delete.includes(item));
+        history.push(query);
+        if (history.length > 1000) {
+            history.splice(0, history.length - 1000);
+        }
+        await browser.storage.local.set({
+            'history': history
+        });
+    }
+
+    async function translate(force_refresh = true, add_history = true) {
         let query = iTranslateSrc.value.trim().toLowerCase();
         console.log('TRANSLATE TEXT: ' + query);
         let do_refresh = force_refresh;
@@ -314,6 +357,9 @@
             let lang_from = iTranslateFrom.value;
             let lang_to = iTranslateTo.value;
             iSpinner.style.display = null;
+            if (add_history) {
+                await historyAdd(query);
+            }
             try {
                 let trans_res_all = [];
                 switch (api) {
