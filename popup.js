@@ -160,6 +160,11 @@
     function pairDelete(item) {
         item.title = 'Delete';
         item.addEventListener('click', async function () {
+            if (!item.classList.contains('confirmed')) {
+                item.classList.add('confirmed');
+                setTimeout(() => item.classList.remove('confirmed'), 2000);
+                return;
+            }
             let storage_data = await browser.storage.local.get(null);
             let translation = storage_data['data-' + transKey()] ?? {};
             let trans = document.getElementById(item.dataset.trans_id).innerText;
