@@ -328,7 +328,9 @@
                 do_refresh = true;
             } catch (err) {
                 console.log('TRANSLATE ERROR: ', err);
-                iTranslateRes.innerHTML = err;
+                iTranslateRes.innerHTML =
+                    `<input type="button" id="btn-try-again" value="↻" title="Try again"> ${err}`;
+                document.getElementById('btn-try-again').addEventListener('click', () => translate());
             }
             iSpinner.style.display = 'none';
         }
